@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Local - AI Training Platform</title>
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #3d5a80;
+            --bg-secondary: #1e2d42;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-tertiary: rgba(255, 255, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient-start: #f4a261;
+            --gradient-end: #e76f51;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(0, 0, 0, 0.03);
+            --bg-card-hover: rgba(0, 0, 0, 0.06);
+            --text-primary: #1e2d42;
+            --text-secondary: #3d5a80;
+            --text-tertiary: #6b7280;
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .hidden { display: none !important; }
+        .loading { opacity: 0.5; pointer-events: none; }
+
+        /* HEADER */
+        header {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 40px rgba(244, 162, 97, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gradient-start);
+            border: 2px solid var(--gradient-start);
+        }
+
+        .btn-outline:hover {
+            background: rgba(244, 162, 97, 0.1);
+        }
+
+        .btn-small {
+            padding: 0.4rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero .gradient-text {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+        }
+
+        /* STATS */
+        .stats {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        /* SECTIONS */
+        .section {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-description {
+            text-align: center;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: background 0.3s;
+        }
+
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-tertiary);
+        }
+
+        /* CTA */
+        .cta {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .cta-box {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            border-radius: 24px;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .cta-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .cta-box p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-box .btn {
+            background: white;
+            color: #3d5a80;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        /* AUTH PAGES */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-form {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gradient-start);
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .back-link {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            color: var(--text-primary);
+        }
+
+        /* DASHBOARD WITH SIDEBAR */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 73px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: sticky;
+            top: 73px;
+            height: calc(100vh - 73px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-item {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border-left-color: var(--gradient-start);
+        }
+
+        .sidebar-icon {
+            font-size: 1.25rem;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* COURSE GRID */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .course-card:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .price-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .locked-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-tertiary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            margin: 2rem 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* PDF LIST */
+        .pdf-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .pdf-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pdf-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .pdf-icon {
+            font-size: 1.5rem;
+        }
+
+        /* FILE INPUT */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: block;
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--gradient-start);
+            background: rgba(244, 162, 97, 0.05);
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 999px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--gradient-start);
+        }
+
+        .toggle-knob {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LANDING PAGE -->
+    <div id="landingPage">
+        <header>
+            <div class="header-content">
+                <div class="logo" onclick="showPage('landing')">
+                    <div class="logo-circle">W</div>
+                    <span class="logo-text">Work Local</span>
+                </div>
+                <nav>
+                    <a href="#courses" class="nav-links" onclick="showAllCourses(); return false;">Courses</a>
+                    <a href="https://worklocal.ca" class="nav-links" target="_blank">About</a>
+                    <button class="btn btn-secondary" onclick="showPage('signin')">Sign In</button>
+                    <button class="btn btn-primary" onclick="showPage('signup')">Get Started</button>
+                </nav>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>
+                Master AI for Your
+                <span class="gradient-text">Small Business</span>
+            </h1>
+            <p>
+                Comprehensive training programs that help small business owners integrate AI tools 
+                through hands-on courses, interactive exercises, and real-world applications.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showPage('signup')">Start Learning →</button>
+                <button class="btn btn-secondary" onclick="showDemoVideo()">Watch Demo</button>
+            </div>
+        </section>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">✓</div>
+                <div class="stat-label">Certified Courses For Many Different Industries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">✓</div>
+                <div class="stat-label">Learning Solutions For Successful Business Owners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Practical Applications</div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2 style="text-align: center;">How It Works</h2>
+            <p class="section-description">
+                Our proven three-step learning methodology ensures you master AI implementation for your business
+            </p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">▶</div>
+                    <h3>1. Watch & Learn</h3>
+                    <p>Start with comprehensive video tutorials that break down complex AI concepts into digestible lessons</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>2. Review Resources</h3>
+                    <p>Access detailed PDFs, templates, and reference materials to reinforce your learning</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">✔</div>
+                    <h3>3. Practice & Certify</h3>
+                    <p>Complete interactive exercises and earn your certification to prove your AI expertise</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="cta-box">
+                <h2>Ready to Transform Your Business with AI?</h2>
+                <p>Join hundreds of small business owners who are already leveraging AI to grow their operations</p>
+                <button class="btn" onclick="showPage('signup')">Start Your Free Trial</button>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2025 Work Local. All rights reserved.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:support@worklocal.ca" style="color: var(--text-secondary); text-decoration: none;">
+                    Questions or Support? Contact us at support@worklocal.ca
+                </a>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-tertiary);">
+                Version 2.2 (Build 23 - Real Stripe Integration)
+            </p>
+        </footer>
+    </div>
+
+    <!-- SIGN IN PAGE -->
+    <div id="signinPage" class="hidden">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <div class="logo-circle" style="margin: 0 auto 1rem;">W</div>
+                    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Welcome Back</h1>
+                    <p style="color: var(--text-tertiary);">Sign in to continue your learning journey</p>
+                </div>
+
+                <div class="auth-form">
+                    <div id="signinError" class="error-message hidden"></div>
+                    
+                    <form id="signinForm" onsubmit="handleSignIn(event)">
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="signinEmail" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="signinPassword" placeholder="Enter your password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                            Sign In
+                        </button>
+
+                        <p style="text-align: center; color: var(--text-tertiary); font-size: 0.875rem;">
+                            Don't have an account? 
+                            <a href="#" onclick="showPage('signup'); return false;" style="color: var(--gradient-start); font-weight: 600;">Sign up</a>
+                        </p>
+                    </form>
+                </div>
+
+                <div class="back-link">
+                    <a href="#" onclick="showPage('landing'); return false;">← Back to home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGN UP PAGE -->
+    <div id="signupPage" class="hidden">
+        <div class="auth-container">
+            <div class="auth-box" style="max-width: 600px;">
+                <div class="auth-header">
+                    <div class="logo-circle" style="margin: 0 auto 1rem;">W</div>
+                    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Create Your Account</h1>
+                    <p style="color: var(--text-tertiary);">Join thousands of business owners mastering AI</p>
+                </div>
+
+                <div class="auth-form">
+                    <div id="signupError" class="error-message hidden"></div>
+                    <div id="signupSuccess" class="success-message hidden"></div>
+                    
+                    <form id="signupForm" onsubmit="handleSignUp(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="firstName" placeholder="John" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="lastName" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="signupEmail" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Business Name (Optional)</label>
+                            <input type="text" id="businessName" placeholder="Your Business LLC">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="signupPassword" placeholder="Create a strong password (min 6 characters)" required minlength="6">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                            Create Student Account
+                        </button>
+
+                        <p style="text-align: center; color: var(--text-tertiary); font-size: 0.875rem;">
+                            Already have an account? 
+                            <a href="#" onclick="showPage('signin'); return false;" style="color: var(--gradient-start); font-weight: 600;">Sign in</a>
+                        </p>
+                    </form>
+                </div>
+
+                <div class="back-link">
+                    <a href="#" onclick="showPage('landing'); return false;">← Back to home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD WITH SIDEBAR -->
+    <div id="dashboard" class="hidden">
+        <header>
+            <div class="header-content">
+                <div class="logo" onclick="location.reload()">
+                    <div class="logo-circle">W</div>
+                    <span class="logo-text">Work Local</span>
+                </div>
+                <nav>
+                    <span id="userGreeting" style="color: var(--text-tertiary);"></span>
+                    <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <!-- SIDEBAR (Students only) -->
+            <div id="studentSidebar" class="sidebar hidden">
+                <div class="sidebar-nav">
+                    <div class="sidebar-item active" onclick="switchView('videos')" data-view="videos">
+                        <span class="sidebar-icon">▶</span>
+                        <span>Video Courses</span>
+                    </div>
+                    <div class="sidebar-item" onclick="switchView('downloads')" data-view="downloads">
+                        <span class="sidebar-icon">📄</span>
+                        <span>Free Downloads</span>
+                    </div>
+                    <div class="sidebar-item" onclick="switchView('premium')" data-view="premium">
+                        <span class="sidebar-icon">⭐</span>
+                        <span>Premium Content</span>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <div class="theme-toggle" onclick="toggleTheme()">
+                        <span class="sidebar-icon">☀️</span>
+                        <span>Light Mode</span>
+                        <div class="toggle-switch" id="themeToggle">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div id="dashboardContent" class="main-content">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Work Local. All rights reserved.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:support@worklocal.ca" style="color: var(--text-secondary); text-decoration: none;">
+                    Questions or Support? Contact us at support@worklocal.ca
+                </a>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-tertiary);">
+                Version 2.2 (Build 23 - Real Stripe Integration)
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://odmwtcaqwodjvcdrirma.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbXd0Y2Fxd29kanZjZHJpcm1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzA0NjIsImV4cCI6MjA3Nzg0NjQ2Mn0.U-r7FmTQlI0d75VNt8xKINrhFDd0cARqrerj9nG2BDs';
+        
+        // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY (starts with pk_test_...)
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SQBjnEevaKRbfqDyoWuTAxCtc36dTcM0cgm46kKYo0uMPGSzH0aULXmmz3NcCd6Gpmr14sG89E7NrSpHjjFUfXC00JkdQ3TU8';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+        let currentStudentView = 'videos';
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        async function init() {
+            loadThemePreference();
+            
+            // Check for payment status in URL (after Stripe redirect)
+            checkPaymentStatus();
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                currentUser = session.user;
+                await loadUserProfile();
+                showDashboard();
+            }
+
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN') {
+                    currentUser = session.user;
+                    loadUserProfile().then(() => showDashboard());
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    userProfile = null;
+                    showPage('landing');
+                }
+            });
+        }
+
+        // ========================================
+        // PAYMENT STATUS CHECKER
+        // ========================================
+        function checkPaymentStatus() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            
+            if (paymentStatus === 'success') {
+                // Show success message
+                setTimeout(() => {
+                    alert('🎉 Payment Successful!\n\nYour e-course has been unlocked. Check the Premium Content section to access it.');
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }, 500);
+            } else if (paymentStatus === 'cancelled') {
+                // Show cancelled message
+                setTimeout(() => {
+                    alert('Payment was cancelled. You can try again anytime.');
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }, 500);
+            }
+        }
+
+        // ========================================
+        // THEME MANAGEMENT
+        // ========================================
+        function loadThemePreference() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                const toggle = document.getElementById('themeToggle');
+                if (toggle) toggle.classList.add('active');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const toggle = document.getElementById('themeToggle');
+            const isLight = html.getAttribute('data-theme') === 'light';
+            
+            if (isLight) {
+                // Switch to dark
+                html.removeAttribute('data-theme');
+                toggle.classList.remove('active');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // Switch to light
+                html.setAttribute('data-theme', 'light');
+                toggle.classList.add('active');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // ========================================
+        // AUTHENTICATION
+        // ========================================
+        async function handleSignUp(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const businessName = document.getElementById('businessName').value;
+
+            const errorDiv = document.getElementById('signupError');
+            const successDiv = document.getElementById('signupSuccess');
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            const form = document.getElementById('signupForm');
+            form.classList.add('loading');
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            role: 'student',
+                            first_name: firstName,
+                            last_name: lastName,
+                            business_name: businessName
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                if (data.user) {
+                    await supabase.from('profiles').update({
+                        first_name: firstName,
+                        last_name: lastName,
+                        business_name: businessName
+                    }).eq('id', data.user.id);
+                }
+
+                successDiv.textContent = 'Account created successfully! Please check your email to verify your account, then sign in.';
+                successDiv.classList.remove('hidden');
+                
+                form.reset();
+                
+                setTimeout(() => {
+                    showPage('signin');
+                }, 3000);
+
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function handleSignIn(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            const errorDiv = document.getElementById('signinError');
+            errorDiv.classList.add('hidden');
+
+            const form = document.getElementById('signinForm');
+            form.classList.add('loading');
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+                await loadUserProfile();
+                
+                document.getElementById('signinPage').classList.add('hidden');
+                document.getElementById('signupPage').classList.add('hidden');
+                document.getElementById('landingPage').classList.add('hidden');
+                
+                showDashboard();
+
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            userProfile = null;
+            showPage('landing');
+        }
+
+        async function loadUserProfile() {
+            if (!currentUser) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+                userProfile = data;
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // ========================================
+        // DEMO VIDEO
+        // ========================================
+        function showDemoVideo() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Work Local Demo</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <div class="video-container">
+                        <iframe 
+                            src="https://www.youtube.com/embed/u0gh0bxd2OE?autoplay=1" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 2rem;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // ========================================
+        // SHOW ALL COURSES (LANDING PAGE)
+        // ========================================
+        async function showAllCourses() {
+            const { data: courses, error } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('is_published', true)
+                .order('created_at', { ascending: false });
+
+            const courseList = courses || [];
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h2>Available Courses</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    ${courseList.length === 0 ? `
+                        <p style="color: var(--text-tertiary); text-align: center; padding: 2rem;">
+                            No courses available yet. Check back soon!
+                        </p>
+                    ` : `
+                        <div class="course-grid">
+                            ${courseList.map(course => `
+                                <div class="course-card">
+                                    <h3>${course.title}</h3>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin: 0.5rem 0 1rem 0;">${course.description}</p>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                        ${course.category}${course.duration ? ' • ' + course.duration : ''}
+                                    </p>
+                                    <button class="btn btn-primary" style="width: 100%;" onclick="this.closest('.modal').remove(); showPage('signup')">
+                                        Enroll Now
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 2rem;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // ========================================
+        // NAVIGATION
+        // ========================================
+        function showPage(page) {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('signinPage').classList.add('hidden');
+            document.getElementById('signupPage').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+
+            if (page === 'landing') {
+                document.getElementById('landingPage').classList.remove('hidden');
+            } else if (page === 'signin') {
+                document.getElementById('signinPage').classList.remove('hidden');
+            } else if (page === 'signup') {
+                document.getElementById('signupPage').classList.remove('hidden');
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        function switchView(view) {
+            currentStudentView = view;
+            
+            // Update active sidebar item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.view === view) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Load appropriate content
+            if (view === 'videos') {
+                loadVideoCourses();
+            } else if (view === 'downloads') {
+                loadFreeDownloads();
+            } else if (view === 'premium') {
+                loadPremiumContent();
+            }
+        }
+
+        // ========================================
+        // DASHBOARD
+        // ========================================
+        async function showDashboard() {
+            if (!userProfile) return;
+
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            const greeting = document.getElementById('userGreeting');
+            greeting.textContent = `Welcome, ${userProfile.first_name || 'User'}!`;
+
+            if (userProfile.role === 'teacher') {
+                document.getElementById('studentSidebar').classList.add('hidden');
+                await loadTeacherDashboard();
+            } else {
+                document.getElementById('studentSidebar').classList.remove('hidden');
+                // Load the current view (in case returning from modal/new tab)
+                switchView(currentStudentView);
+            }
+        }
+
+        // ========================================
+        // STUDENT VIEWS
+        // ========================================
+        async function loadVideoCourses() {
+            const content = document.getElementById('dashboardContent');
+            
+            const { data: courses, error } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('is_published', true)
+                .order('created_at', { ascending: false });
+
+            const courseCount = courses ? courses.length : 0;
+            
+            content.innerHTML = `
+                <h2>Video Courses</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Watch comprehensive video tutorials to master AI for your business
+                </p>
+                
+                ${courseCount === 0 ? `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Courses Available Yet</h3>
+                        <p style="color: var(--text-tertiary);">
+                            Check back soon for new video courses!
+                        </p>
+                    </div>
+                ` : `
+                    <div class="course-grid">
+                        ${courses.map(course => `
+                            <div class="course-card">
+                                <h3>${course.title}</h3>
+                                <p style="color: var(--text-tertiary); font-size: 0.875rem; margin: 0.5rem 0 1rem 0;">${course.description}</p>
+                                <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                    ${course.category}${course.duration ? ' • ' + course.duration : ''}
+                                </p>
+                                <button class="btn btn-primary" style="width: 100%;" onclick="viewCourse('${course.id}')">
+                                    Watch Course
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        async function loadFreeDownloads() {
+            const content = document.getElementById('dashboardContent');
+            
+            const { data: pdfs, error } = await supabase
+                .from('course_pdfs')
+                .select(`
+                    *,
+                    courses!inner(title, is_published)
+                `)
+                .eq('courses.is_published', true)
+                .order('created_at', { ascending: false });
+
+            const pdfCount = pdfs ? pdfs.length : 0;
+            
+            content.innerHTML = `
+                <h2>Free Downloads</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Access all free PDF resources, workbooks, and templates
+                </p>
+                
+                ${pdfCount === 0 ? `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Downloads Available Yet</h3>
+                        <p style="color: var(--text-tertiary);">
+                            Check back soon for free resources!
+                        </p>
+                    </div>
+                ` : `
+                    <div class="pdf-list" style="max-width: 800px;">
+                        ${pdfs.map(pdf => `
+                            <div class="pdf-item">
+                                <div class="pdf-info">
+                                    <span class="pdf-icon">📄</span>
+                                    <div>
+                                        <div style="font-weight: 600;">${pdf.title}</div>
+                                        <div style="font-size: 0.875rem; color: var(--text-tertiary);">From: ${pdf.courses.title}</div>
+                                    </div>
+                                </div>
+                                <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small">
+                                    Download
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        async function loadPremiumContent() {
+            const content = document.getElementById('dashboardContent');
+            
+            // Load all e-courses
+            const { data: ecourses, error: ecoursesError } = await supabase
+                .from('ecourses')
+                .select(`
+                    *,
+                    courses!inner(title, is_published)
+                `)
+                .eq('is_published', true)
+                .eq('courses.is_published', true)
+                .order('created_at', { ascending: false });
+
+            // DEBUG: Log to console
+            console.log('E-courses query result:', ecourses, ecoursesError);
+
+            // Load user's purchases
+            const { data: purchases, error: purchasesError } = await supabase
+                .from('purchases')
+                .select('ecourse_id')
+                .eq('user_id', currentUser.id);
+
+            const purchasedIds = purchases ? purchases.map(p => p.ecourse_id) : [];
+            const ecourseCount = ecourses ? ecourses.length : 0;
+            
+            content.innerHTML = `
+                <h2>Premium Content</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    Interactive e-courses with quizzes, exercises, and hands-on practice
+                </p>
+                
+                ${ecourseCount === 0 ? `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Premium Content Available Yet</h3>
+                        <p style="color: var(--text-tertiary); margin-bottom: 1rem;">
+                            Check back soon for new e-courses!
+                        </p>
+                        <p style="color: var(--text-tertiary); font-size: 0.875rem;">
+                            <strong>Teacher?</strong> Upload e-courses through the instructor dashboard.
+                        </p>
+                    </div>
+                ` : `
+                    <div class="course-grid">
+                        ${ecourses.map(ecourse => {
+                            const isPurchased = purchasedIds.includes(ecourse.id);
+                            return `
+                                <div class="course-card">
+                                    ${isPurchased ? 
+                                        '<div class="price-badge">✓ Purchased</div>' : 
+                                        `<div class="price-badge">${ecourse.price}</div>`
+                                    }
+                                    <h3>${ecourse.title}</h3>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin: 0.5rem 0 1rem 0;">${ecourse.description || ''}</p>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                        From: ${ecourse.courses.title}
+                                    </p>
+                                    ${isPurchased ? 
+                                        `<button class="btn btn-primary" style="width: 100%;" onclick="event.preventDefault(); openEcourse('${ecourse.file_url}')">
+                                            Open E-Course
+                                        </button>` :
+                                        `<button class="btn btn-primary" style="width: 100%;" onclick="event.preventDefault(); initiateCheckout('${ecourse.id}', '${ecourse.title.replace(/'/g, "\\'")}', ${ecourse.price})">
+                                            Buy Now - ${ecourse.price}
+                                        </button>`
+                                    }
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        async function openEcourse(fileUrl) {
+            console.log('ECOURSE_MODAL_FIX_ACTIVE');
+            console.log('Opening e-course:', fileUrl);
+            
+            try {
+                const loadingModal = document.createElement('div');
+                loadingModal.className = 'modal';
+                loadingModal.innerHTML = `
+                    <div class="modal-content" style="text-align: center;">
+                        <p style="font-size: 1.5rem; margin: 2rem;">Loading e-course...</p>
+                    </div>
+                `;
+                document.body.appendChild(loadingModal);
+
+                const response = await fetch(fileUrl);
+                const htmlContent = await response.text();
+                
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                loadingModal.remove();
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.padding = '0';
+                modal.innerHTML = `
+                    <div style="width: 100%; height: 100vh; max-width: 100%; max-height: 100%; background: white; display: flex; flex-direction: column;">
+                        <div style="background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary)); padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+                            <h2 style="margin: 0; color: var(--text-primary);">E-Course Viewer</h2>
+                            <button class="btn btn-secondary btn-small" onclick="this.closest('.modal').remove(); URL.revokeObjectURL('${blobUrl}')">
+                                Close
+                            </button>
+                        </div>
+                        <iframe 
+                            src="${blobUrl}" 
+                            style="flex: 1; width: 100%; border: none; background: white;"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                        ></iframe>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                console.log('E-course modal displayed successfully');
+                
+            } catch (error) {
+                console.error('Error opening e-course:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // STRIPE CHECKOUT (REAL IMPLEMENTATION)
+        // ========================================
+        async function initiateCheckout(ecourseId, title, price) {
+            try {
+                // Show loading state
+                const loadingModal = document.createElement('div');
+                loadingModal.className = 'modal';
+                loadingModal.innerHTML = `
+                    <div class="modal-content" style="text-align: center;">
+                        <h2 style="margin-bottom: 1rem;">Processing...</h2>
+                        <p style="color: var(--text-tertiary);">Creating secure checkout session...</p>
+                    </div>
+                `;
+                document.body.appendChild(loadingModal);
+
+                // Call Supabase Edge Function to create Stripe Checkout Session
+                const { data: functionData, error: functionError } = await supabase.functions.invoke('create-checkout-session', {
+                    body: {
+                        ecourseId: ecourseId,
+                        ecourseTitle: title,
+                        price: price,
+                        userId: currentUser.id,
+                        userEmail: currentUser.email
+                    }
+                });
+
+                loadingModal.remove();
+
+                if (functionError) {
+                    throw new Error(functionError.message || 'Failed to create checkout session');
+                }
+
+                if (!functionData || !functionData.sessionId) {
+                    throw new Error('Invalid response from checkout service');
+                }
+
+                // Redirect to Stripe Checkout
+                const { error: stripeError } = await stripe.redirectToCheckout({
+                    sessionId: functionData.sessionId
+                });
+
+                if (stripeError) {
+                    throw stripeError;
+                }
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Error creating checkout session: ' + error.message + '\n\nPlease try again or contact support.');
+            }
+        }
+
+        // ========================================
+        // TEACHER DASHBOARD
+        // ========================================
+        async function loadTeacherDashboard() {
+            const content = document.getElementById('dashboardContent');
+            
+            const { data: courses, error } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('instructor_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            const courseCount = courses ? courses.length : 0;
+
+            content.innerHTML = `
+                <h2>Instructor Dashboard</h2>
+                
+                <div class="stats" style="margin: 2rem 0;">
+                    <div class="stat-card">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📚</div>
+                        <div class="stat-number">${courseCount}</div>
+                        <div class="stat-label">Your Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💰</div>
+                        <div class="stat-number">$0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="showCreateCourseModal()" style="margin-bottom: 2rem;">
+                    + Create New Course
+                </button>
+
+                <div id="coursesList">
+                    ${courseCount === 0 ? `
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
+                            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Courses Yet</h3>
+                            <p style="color: var(--text-tertiary);">
+                                Click "Create New Course" to add your first course with videos, PDFs, and e-courses.
+                            </p>
+                        </div>
+                    ` : `
+                        <h3 style="margin-bottom: 1rem;">Your Courses</h3>
+                        <div class="course-grid">
+                            ${courses.map(course => `
+                                <div class="course-card">
+                                    <h3>${course.title}</h3>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin: 0.5rem 0;">${course.description}</p>
+                                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
+                                        ${course.category} • ${course.is_published ? '✓ Published' : 'Draft'}
+                                    </p>
+                                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <button class="btn btn-outline" style="flex: 1;" onclick="editCourse('${course.id}')">
+                                            Edit
+                                        </button>
+                                        <button class="btn ${course.is_published ? 'btn-secondary' : 'btn-primary'}" style="flex: 1;" onclick="togglePublish('${course.id}', ${course.is_published})">
+                                            ${course.is_published ? 'Unpublish' : 'Publish'}
+                                        </button>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn btn-outline btn-small" style="flex: 1;" onclick="managePDFs('${course.id}')">
+                                            📄 PDFs
+                                        </button>
+                                        <button class="btn btn-outline btn-small" style="flex: 1;" onclick="manageEcourses('${course.id}')">
+                                            ⭐ E-Courses
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        // ========================================
+        // COURSE MANAGEMENT (unchanged)
+        // ========================================
+        function showCreateCourseModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Create New Course</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <form id="createCourseForm" onsubmit="handleCreateCourse(event)">
+                        <div class="form-group">
+                            <label>Course Title</label>
+                            <input type="text" id="courseTitle" placeholder="e.g., AI for Restaurant Management" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="courseDescription" rows="3" placeholder="Brief description of what students will learn..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="courseCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="Restaurant">Restaurant</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Real Estate">Real Estate</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>YouTube Video URL (paste full URL)</label>
+                            <input type="url" id="courseVideoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+                            <p style="color: var(--text-tertiary); font-size: 0.75rem; margin-top: 0.5rem;">
+                                Paste your YouTube unlisted video URL here
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Duration (e.g., "4 hours")</label>
+                            <input type="text" id="courseDuration" placeholder="e.g., 4 hours">
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">Create Course</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function handleCreateCourse(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            form.classList.add('loading');
+
+            const title = document.getElementById('courseTitle').value;
+            const description = document.getElementById('courseDescription').value;
+            const category = document.getElementById('courseCategory').value;
+            const videoUrl = document.getElementById('courseVideoUrl').value;
+            const duration = document.getElementById('courseDuration').value;
+
+            try {
+                const { data, error } = await supabase
+                    .from('courses')
+                    .insert([{
+                        title: title,
+                        description: description,
+                        category: category,
+                        video_url: videoUrl,
+                        duration: duration,
+                        instructor_id: currentUser.id,
+                        is_published: false
+                    }])
+                    .select();
+
+                if (error) throw error;
+
+                alert('Course created successfully!');
+                form.closest('.modal').remove();
+                await loadTeacherDashboard();
+
+            } catch (error) {
+                alert('Error creating course: ' + error.message);
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function editCourse(courseId) {
+            const { data: course, error } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('id', courseId)
+                .single();
+
+            if (error) {
+                alert('Error loading course: ' + error.message);
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Course</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <form id="editCourseForm" onsubmit="handleEditCourse(event, '${courseId}')">
+                        <div class="form-group">
+                            <label>Course Title</label>
+                            <input type="text" id="editCourseTitle" value="${course.title}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="editCourseDescription" rows="3" required>${course.description}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="editCourseCategory" required>
+                                <option value="Restaurant" ${course.category === 'Restaurant' ? 'selected' : ''}>Restaurant</option>
+                                <option value="Retail" ${course.category === 'Retail' ? 'selected' : ''}>Retail</option>
+                                <option value="Healthcare" ${course.category === 'Healthcare' ? 'selected' : ''}>Healthcare</option>
+                                <option value="Real Estate" ${course.category === 'Real Estate' ? 'selected' : ''}>Real Estate</option>
+                                <option value="Other" ${course.category === 'Other' ? 'selected' : ''}>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>YouTube Video URL</label>
+                            <input type="url" id="editCourseVideoUrl" value="${course.video_url || ''}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <input type="text" id="editCourseDuration" value="${course.duration || ''}" placeholder="e.g., 4 hours">
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function handleEditCourse(event, courseId) {
+            event.preventDefault();
+
+            const form = event.target;
+            form.classList.add('loading');
+
+            const title = document.getElementById('editCourseTitle').value;
+            const description = document.getElementById('editCourseDescription').value;
+            const category = document.getElementById('editCourseCategory').value;
+            const videoUrl = document.getElementById('editCourseVideoUrl').value;
+            const duration = document.getElementById('editCourseDuration').value;
+
+            try {
+                const { data, error } = await supabase
+                    .from('courses')
+                    .update({
+                        title: title,
+                        description: description,
+                        category: category,
+                        video_url: videoUrl,
+                        duration: duration
+                    })
+                    .eq('id', courseId);
+
+                if (error) throw error;
+
+                alert('Course updated successfully!');
+                form.closest('.modal').remove();
+                await loadTeacherDashboard();
+
+            } catch (error) {
+                alert('Error updating course: ' + error.message);
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function togglePublish(courseId, currentStatus) {
+            try {
+                const { data, error } = await supabase
+                    .from('courses')
+                    .update({ is_published: !currentStatus })
+                    .eq('id', courseId);
+
+                if (error) throw error;
+
+                alert(currentStatus ? 'Course unpublished!' : 'Course published! Students can now see it.');
+                await loadTeacherDashboard();
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // PDF MANAGEMENT
+        // ========================================
+        async function managePDFs(courseId) {
+            const { data: pdfs, error } = await supabase
+                .from('course_pdfs')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading PDFs:', error);
+            }
+
+            const pdfList = pdfs || [];
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Manage Course PDFs</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Upload New PDF</h3>
+                        <form id="pdfUploadForm" onsubmit="handlePDFUpload(event, '${courseId}')">
+                            <div class="form-group">
+                                <label>PDF Title</label>
+                                <input type="text" id="pdfTitle" placeholder="e.g., Course Workbook" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Select PDF File</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="pdfFile" accept=".pdf" required onchange="updateFilePreview(this)">
+                                    <div class="file-input-label">
+                                        <p style="font-size: 2rem; margin-bottom: 0.5rem;">📄</p>
+                                        <p style="color: var(--text-secondary);">Click to select PDF file</p>
+                                        <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-top: 0.5rem;">Max size: 50MB</p>
+                                    </div>
+                                </div>
+                                <div id="filePreview" class="file-preview hidden"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Upload PDF
+                            </button>
+                        </form>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Existing PDFs (${pdfList.length})</h3>
+                        ${pdfList.length === 0 ? `
+                            <p style="color: var(--text-tertiary); text-align: center; padding: 2rem;">
+                                No PDFs uploaded yet
+                            </p>
+                        ` : `
+                            <div class="pdf-list">
+                                ${pdfList.map(pdf => `
+                                    <div class="pdf-item">
+                                        <div class="pdf-info">
+                                            <span class="pdf-icon">📄</span>
+                                            <span>${pdf.title}</span>
+                                        </div>
+                                        <button class="btn btn-secondary btn-small" onclick="deletePDF('${pdf.id}', '${courseId}')">
+                                            Delete
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function updateFilePreview(input) {
+            const preview = document.getElementById('filePreview');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                preview.innerHTML = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                preview.classList.remove('hidden');
+            }
+        }
+
+        async function handlePDFUpload(event, courseId) {
+            event.preventDefault();
+
+            const form = event.target;
+            form.classList.add('loading');
+
+            const title = document.getElementById('pdfTitle').value;
+            const fileInput = document.getElementById('pdfFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a PDF file');
+                form.classList.remove('loading');
+                return;
+            }
+
+            try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${courseId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('course-pdfs')
+                    .upload(fileName, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data: urlData } = supabase.storage
+                    .from('course-pdfs')
+                    .getPublicUrl(fileName);
+
+                const { data: dbData, error: dbError } = await supabase
+                    .from('course_pdfs')
+                    .insert([{
+                        course_id: courseId,
+                        title: title,
+                        file_url: urlData.publicUrl,
+                        file_path: fileName
+                    }]);
+
+                if (dbError) throw dbError;
+
+                alert('PDF uploaded successfully!');
+                form.closest('.modal').remove();
+                managePDFs(courseId);
+
+            } catch (error) {
+                alert('Error uploading PDF: ' + error.message);
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function deletePDF(pdfId, courseId) {
+            if (!confirm('Are you sure you want to delete this PDF?')) return;
+
+            try {
+                const { data: pdf } = await supabase
+                    .from('course_pdfs')
+                    .select('file_path')
+                    .eq('id', pdfId)
+                    .single();
+
+                if (pdf && pdf.file_path) {
+                    await supabase.storage
+                        .from('course-pdfs')
+                        .remove([pdf.file_path]);
+                }
+
+                const { error } = await supabase
+                    .from('course_pdfs')
+                    .delete()
+                    .eq('id', pdfId);
+
+                if (error) throw error;
+
+                alert('PDF deleted successfully!');
+                document.querySelector('.modal').remove();
+                managePDFs(courseId);
+
+            } catch (error) {
+                alert('Error deleting PDF: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // E-COURSE MANAGEMENT (NEW!)
+        // ========================================
+        async function manageEcourses(courseId) {
+            const { data: ecourses, error } = await supabase
+                .from('ecourses')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading e-courses:', error);
+            }
+
+            const ecourseList = ecourses || [];
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Manage E-Courses (Premium Content)</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Upload New E-Course</h3>
+                        <form id="ecourseUploadForm" onsubmit="handleEcourseUpload(event, '${courseId}')">
+                            <div class="form-group">
+                                <label>E-Course Title</label>
+                                <input type="text" id="ecourseTitle" placeholder="e.g., Restaurant Marketing Quiz" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="ecourseDescription" rows="2" placeholder="Brief description of this interactive content..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Price (USD)</label>
+                                <input type="number" id="ecoursePrice" placeholder="9.99" step="0.01" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Select HTML File (Interactive Quiz/Exercise)</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="ecourseFile" accept=".html" required onchange="updateEcourseFilePreview(this)">
+                                    <div class="file-input-label">
+                                        <p style="font-size: 2rem; margin-bottom: 0.5rem;">📝</p>
+                                        <p style="color: var(--text-secondary);">Click to select HTML file</p>
+                                        <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-top: 0.5rem;">Self-contained HTML files with quizzes/exercises</p>
+                                    </div>
+                                </div>
+                                <div id="ecourseFilePreview" class="file-preview hidden"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Upload E-Course
+                            </button>
+                        </form>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Existing E-Courses (${ecourseList.length})</h3>
+                        ${ecourseList.length === 0 ? `
+                            <p style="color: var(--text-tertiary); text-align: center; padding: 2rem;">
+                                No e-courses uploaded yet
+                            </p>
+                        ` : `
+                            <div class="pdf-list">
+                                ${ecourseList.map(ecourse => `
+                                    <div class="pdf-item">
+                                        <div class="pdf-info">
+                                            <span class="pdf-icon">⭐</span>
+                                            <div>
+                                                <div style="font-weight: 600;">${ecourse.title}</div>
+                                                <div style="font-size: 0.875rem; color: var(--text-tertiary);">${ecourse.price} • ${ecourse.is_published ? '✓ Published' : 'Draft'}</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="btn btn-outline btn-small" onclick="toggleEcoursePublish('${ecourse.id}', ${ecourse.is_published}, '${courseId}')">
+                                                ${ecourse.is_published ? 'Unpublish' : 'Publish'}
+                                            </button>
+                                            <button class="btn btn-secondary btn-small" onclick="deleteEcourse('${ecourse.id}', '${courseId}')">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function updateEcourseFilePreview(input) {
+            const preview = document.getElementById('ecourseFilePreview');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                preview.innerHTML = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                preview.classList.remove('hidden');
+            }
+        }
+
+        async function handleEcourseUpload(event, courseId) {
+            event.preventDefault();
+
+            const form = event.target;
+            form.classList.add('loading');
+
+            const title = document.getElementById('ecourseTitle').value;
+            const description = document.getElementById('ecourseDescription').value;
+            const price = parseFloat(document.getElementById('ecoursePrice').value);
+            const fileInput = document.getElementById('ecourseFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an HTML file');
+                form.classList.remove('loading');
+                return;
+            }
+
+            try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${courseId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+                // Upload with correct content-type for HTML
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('ecourse-files')
+                    .upload(fileName, file, {
+                        contentType: 'text/html',
+                        cacheControl: '3600'
+                    });
+
+                if (uploadError) throw uploadError;
+
+                const { data: urlData } = supabase.storage
+                    .from('ecourse-files')
+                    .getPublicUrl(fileName);
+
+                const { data: dbData, error: dbError } = await supabase
+                    .from('ecourses')
+                    .insert([{
+                        course_id: courseId,
+                        title: title,
+                        description: description,
+                        price: price,
+                        file_url: urlData.publicUrl,
+                        file_path: fileName,
+                        is_published: false
+                    }]);
+
+                if (dbError) throw dbError;
+
+                alert('E-course uploaded successfully!');
+                form.closest('.modal').remove();
+                manageEcourses(courseId);
+
+            } catch (error) {
+                alert('Error uploading e-course: ' + error.message);
+            } finally {
+                form.classList.remove('loading');
+            }
+        }
+
+        async function toggleEcoursePublish(ecourseId, currentStatus, courseId) {
+            const newStatus = !currentStatus;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('ecourses')
+                    .update({ is_published: newStatus })
+                    .eq('id', ecourseId)
+                    .select();
+
+                if (error) throw error;
+
+                alert(newStatus ? 'E-course published! Students can now purchase it.' : 'E-course unpublished!');
+                document.querySelector('.modal').remove();
+                manageEcourses(courseId);
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+                console.error('Publish error:', error);
+            }
+        }
+
+        async function deleteEcourse(ecourseId, courseId) {
+            if (!confirm('Are you sure you want to delete this e-course?')) return;
+
+            try {
+                const { data: ecourse } = await supabase
+                    .from('ecourses')
+                    .select('file_path')
+                    .eq('id', ecourseId)
+                    .single();
+
+                if (ecourse && ecourse.file_path) {
+                    await supabase.storage
+                        .from('ecourse-files')
+                        .remove([ecourse.file_path]);
+                }
+
+                const { error } = await supabase
+                    .from('ecourses')
+                    .delete()
+                    .eq('id', ecourseId);
+
+                if (error) throw error;
+
+                alert('E-course deleted successfully!');
+                document.querySelector('.modal').remove();
+                manageEcourses(courseId);
+
+            } catch (error) {
+                alert('Error deleting e-course: ' + error.message);
+            }
+        }
+
+        // ========================================
+        // STUDENT VIEW COURSE
+        // ========================================
+        async function viewCourse(courseId) {
+            const { data: course, error } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('id', courseId)
+                .single();
+
+            if (error) {
+                alert('Error loading course: ' + error.message);
+                return;
+            }
+
+            const { data: pdfs } = await supabase
+                .from('course_pdfs')
+                .select('*')
+                .eq('course_id', courseId)
+                .order('created_at', { ascending: false });
+
+            const pdfList = pdfs || [];
+
+            let videoId = '';
+            if (course.video_url) {
+                const urlParams = new URL(course.video_url).searchParams;
+                videoId = urlParams.get('v') || course.video_url.split('/').pop();
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>${course.title}</h2>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+
+                    <p style="color: var(--text-tertiary); margin-bottom: 1rem;">${course.description}</p>
+                    
+                    <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 2rem;">
+                        ${course.category}${course.duration ? ' • ' + course.duration : ''}
+                    </p>
+
+                    ${videoId ? `
+                        <div class="video-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    ` : '<p style="color: var(--text-tertiary); text-align: center; padding: 2rem;">No video available</p>'}
+
+                    ${pdfList.length > 0 ? `
+                        <div style="margin-top: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">📄 Course Materials (Free Download)</h3>
+                            <div class="pdf-list">
+                                ${pdfList.map(pdf => `
+                                    <div class="pdf-item">
+                                        <div class="pdf-info">
+                                            <span class="pdf-icon">📄</span>
+                                            <span>${pdf.title}</span>
+                                        </div>
+                                        <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small">
+                                            Download
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 2rem;" onclick="this.closest('.modal').remove()">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>

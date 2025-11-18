@@ -1,0 +1,170 @@
+================================================================
+🚀 STRIPE INTEGRATION - QUICK START COMMANDS
+Work Local LMS - Build 23
+================================================================
+
+📍 RUN THESE COMMANDS IN ORDER (PowerShell)
+Navigate to your project directory first!
+
+================================================================
+STEP 1: Navigate to Project
+================================================================
+cd "C:\Users\Tuf Gamer\Desktop\Cursor Stuff\lms project"
+
+================================================================
+STEP 2: Install Supabase CLI (if not installed)
+================================================================
+npm install -g supabase
+
+# OR using Scoop:
+# scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+# scoop install supabase
+
+================================================================
+STEP 3: Login to Supabase
+================================================================
+supabase login
+
+# This will open your browser - login with your Supabase account
+
+================================================================
+STEP 4: Link Your Project
+================================================================
+supabase link --project-ref odmwtcaqwodjvcdrirma
+
+# If it asks for your database password, find it in Supabase Dashboard:
+# Settings > Database > Database password
+
+================================================================
+STEP 5: Set Environment Secrets
+================================================================
+
+# Get these values first:
+# - Stripe Secret Key: https://dashboard.stripe.com/test/apikeys (click Reveal)
+# - Supabase Service Role: https://supabase.com/dashboard/project/odmwtcaqwodjvcdrirma/settings/api
+
+# Set Stripe Secret Key (replace with your actual key)
+supabase secrets set STRIPE_SECRET_KEY=sk_test_YOUR_KEY_HERE
+
+# Set Supabase URL
+supabase secrets set SUPABASE_URL=https://odmwtcaqwodjvcdrirma.supabase.co
+
+# Set Supabase Service Role Key (replace with your actual key)
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY_HERE
+
+# We'll set STRIPE_WEBHOOK_SECRET later (after creating webhook in Stripe)
+
+================================================================
+STEP 6: Deploy Edge Functions
+================================================================
+
+# Deploy checkout session creator
+supabase functions deploy create-checkout-session
+
+# Deploy webhook handler
+supabase functions deploy stripe-webhook
+
+# ⚠️ IMPORTANT: Copy the function URLs from the output!
+# They will look like:
+# https://odmwtcaqwodjvcdrirma.supabase.co/functions/v1/create-checkout-session
+# https://odmwtcaqwodjvcdrirma.supabase.co/functions/v1/stripe-webhook
+
+================================================================
+STEP 7: Create Stripe Webhook (Do this in Stripe Dashboard)
+================================================================
+
+1. Go to: https://dashboard.stripe.com/test/webhooks
+2. Click "+ Add endpoint"
+3. Enter endpoint URL: 
+   https://odmwtcaqwodjvcdrirma.supabase.co/functions/v1/stripe-webhook
+4. Select event: checkout.session.completed
+5. Click "Add endpoint"
+6. Copy the "Signing secret" (starts with whsec_...)
+
+================================================================
+STEP 8: Set Webhook Secret & Redeploy
+================================================================
+
+# Set the webhook signing secret you just copied
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET_HERE
+
+# Redeploy webhook function with new secret
+supabase functions deploy stripe-webhook
+
+================================================================
+STEP 9: Test Your Integration! 🎉
+================================================================
+
+1. Open your LMS: Open index.html in browser
+2. Sign in as a student
+3. Go to "Premium Content"
+4. Try to purchase an e-course
+5. Use test card: 4242 4242 4242 4242
+   - Expiry: any future date (12/34)
+   - CVC: any 3 digits (123)
+   - ZIP: any 5 digits (12345)
+
+================================================================
+MONITORING & DEBUGGING
+================================================================
+
+# View real-time logs for checkout function
+supabase functions logs create-checkout-session --follow
+
+# View real-time logs for webhook function
+supabase functions logs stripe-webhook --follow
+
+# List all secrets
+supabase secrets list
+
+# Unset a secret (if you made a mistake)
+supabase secrets unset SECRET_NAME
+
+================================================================
+VERIFICATION CHECKLIST
+================================================================
+
+After testing, verify:
+✓ Payment redirected to Stripe Checkout
+✓ Test payment completed successfully
+✓ Redirected back to LMS with success message
+✓ E-course shows "✓ Purchased" badge
+✓ Can open the e-course content
+✓ Purchase appears in Supabase purchases table
+
+================================================================
+HELPFUL LINKS
+================================================================
+
+Supabase Dashboard: https://supabase.com/dashboard/project/odmwtcaqwodjvcdrirma
+Stripe Dashboard: https://dashboard.stripe.com/test
+Stripe API Keys: https://dashboard.stripe.com/test/apikeys
+Stripe Webhooks: https://dashboard.stripe.com/test/webhooks
+Stripe Test Cards: https://stripe.com/docs/testing
+
+================================================================
+COMMON ISSUES & FIXES
+================================================================
+
+❌ "command not found: supabase"
+✅ Install Supabase CLI: npm install -g supabase
+
+❌ "Project not linked"
+✅ Run: supabase link --project-ref odmwtcaqwodjvcdrirma
+
+❌ "Authentication failed"
+✅ Run: supabase login
+
+❌ Checkout fails with "Invalid API key"
+✅ Check STRIPE_SECRET_KEY is set correctly
+
+❌ Webhook doesn't trigger
+✅ Verify webhook URL and STRIPE_WEBHOOK_SECRET
+
+❌ Purchase doesn't appear in database
+✅ Check webhook function logs: supabase functions logs stripe-webhook
+
+================================================================
+🎓 BUILD 23 - REAL STRIPE INTEGRATION COMPLETE!
+================================================================
+
