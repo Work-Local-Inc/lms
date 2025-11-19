@@ -836,6 +836,216 @@
             transform: translateX(20px);
         }
 
+        /* TOAST NOTIFICATIONS */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            pointer-events: auto;
+            animation: slideIn 0.3s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.toast-success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast.toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.toast-info {
+            border-left: 4px solid var(--gradient-start);
+        }
+
+        .toast.toast-exit {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* LOADING SPINNER */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--gradient-start);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .spinner-large {
+            width: 40px;
+            height: 40px;
+            border-width: 4px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading .btn {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading .btn::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* PAGE TRANSITIONS */
+        .page-transition {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* BETTER EMPTY STATES */
+        .empty-state {
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            color: var(--text-tertiary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-card);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 0.25rem;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .hero h1 {
@@ -853,12 +1063,25 @@
             .course-grid {
                 grid-template-columns: 1fr;
             }
+
+            .toast-container {
+                left: 10px;
+                right: 10px;
+                top: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- LANDING PAGE -->
-    <div id="landingPage">
+    <div id="landingPage" class="page-transition">
         <header>
             <div class="header-content">
                 <div class="logo" onclick="showPage('landing')">
@@ -1045,7 +1268,7 @@
     </div>
 
     <!-- SIGN IN PAGE -->
-    <div id="signinPage" class="hidden">
+    <div id="signinPage" class="hidden page-transition">
         <div class="auth-container">
             <div class="auth-box">
                 <div class="auth-header">
@@ -1092,7 +1315,7 @@
     </div>
 
     <!-- SIGN UP PAGE -->
-    <div id="signupPage" class="hidden">
+    <div id="signupPage" class="hidden page-transition">
         <div class="auth-container">
             <div class="auth-box" style="max-width: 600px;">
                 <div class="auth-header">
@@ -1151,7 +1374,7 @@
     </div>
 
     <!-- DASHBOARD WITH SIDEBAR -->
-    <div id="dashboard" class="hidden">
+    <div id="dashboard" class="hidden page-transition">
         <header>
             <div class="header-content">
                 <div class="logo" onclick="location.reload()">
@@ -1230,6 +1453,113 @@
         let currentStudentView = 'videos';
 
         // ========================================
+        // TOAST NOTIFICATION SYSTEM
+        // ========================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = {
+                success: '✓',
+                error: '✕',
+                info: 'ℹ',
+                warning: '⚠'
+            }[type] || 'ℹ';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-content">
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.closest('.toast').remove()">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Auto-remove after duration
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.classList.add('toast-exit');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+            
+            return toast;
+        }
+
+        function showSuccessToast(message) {
+            return showToast(message, 'success');
+        }
+
+        function showErrorToast(message) {
+            return showToast(message, 'error');
+        }
+
+        function showInfoToast(message) {
+            return showToast(message, 'info');
+        }
+
+        // ========================================
+        // LOADING SPINNER UTILITY
+        // ========================================
+        function showLoadingSpinner(message = 'Loading...') {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'loadingModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="text-align: center; max-width: 300px;">
+                    <div class="spinner spinner-large" style="margin: 0 auto 1rem;"></div>
+                    <p style="color: var(--text-secondary);">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            return modal;
+        }
+
+        function hideLoadingSpinner() {
+            const modal = document.getElementById('loadingModal');
+            if (modal) modal.remove();
+        }
+
+        // ========================================
+        // COURSE PROGRESS TRACKING
+        // ========================================
+        function getCourseProgress(courseId) {
+            const progress = localStorage.getItem(`course_progress_${currentUser?.id}_${courseId}`);
+            return progress ? JSON.parse(progress) : { started: false, completed: false, lastViewed: null, progress: 0 };
+        }
+
+        function setCourseProgress(courseId, progressData) {
+            localStorage.setItem(`course_progress_${currentUser?.id}_${courseId}`, JSON.stringify({
+                ...progressData,
+                lastViewed: new Date().toISOString()
+            }));
+        }
+
+        function markCourseAsStarted(courseId) {
+            const current = getCourseProgress(courseId);
+            if (!current.started) {
+                setCourseProgress(courseId, { ...current, started: true, progress: 10 });
+                showInfoToast('Course started! Your progress is being tracked.');
+            }
+        }
+
+        function getAllCourseProgress() {
+            if (!currentUser) return {};
+            const progress = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`course_progress_${currentUser.id}_`)) {
+                    const courseId = key.replace(`course_progress_${currentUser.id}_`, '');
+                    progress[courseId] = JSON.parse(localStorage.getItem(key));
+                }
+            }
+            return progress;
+        }
+
+        // ========================================
         // INITIALIZATION
         // ========================================
         async function init() {
@@ -1268,14 +1598,14 @@
             if (paymentStatus === 'success') {
                 // Show success message
                 setTimeout(() => {
-                    alert('🎉 Payment Successful!\n\nYour e-course has been unlocked. Check the Premium Content section to access it.');
+                    showSuccessToast('🎉 Payment Successful! Your e-course has been unlocked. Check Premium Content to access it.');
                     // Clean URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }, 500);
             } else if (paymentStatus === 'cancelled') {
                 // Show cancelled message
                 setTimeout(() => {
-                    alert('Payment was cancelled. You can try again anytime.');
+                    showInfoToast('Payment was cancelled. You can try again anytime.');
                     // Clean URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }, 500);
@@ -1672,26 +2002,37 @@
                 </p>
                 
                 ${courseCount === 0 ? `
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Courses Available Yet</h3>
-                        <p style="color: var(--text-tertiary);">
-                            Check back soon for new video courses!
-                        </p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <h3>No Courses Available Yet</h3>
+                        <p>We're working on amazing AI training courses for you. Check back soon!</p>
                     </div>
                 ` : `
                     <div class="course-grid">
-                        ${courses.map(course => `
+                        ${courses.map(course => {
+                            const progress = getCourseProgress(course.id);
+                            const buttonText = progress.started ? 
+                                (progress.completed ? '✓ Completed' : 'Continue Learning') : 
+                                'Start Course';
+                            return `
                             <div class="course-card">
                                 <h3>${course.title}</h3>
                                 <p style="color: var(--text-tertiary); font-size: 0.875rem; margin: 0.5rem 0 1rem 0;">${course.description}</p>
                                 <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 1rem;">
                                     ${course.category}${course.duration ? ' • ' + course.duration : ''}
                                 </p>
-                                <button class="btn btn-primary" style="width: 100%;" onclick="viewCourse('${course.id}')">
-                                    Watch Course
+                                ${progress.started ? `
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${progress.progress}%"></div>
+                                    </div>
+                                    <div class="progress-text">${progress.progress}% complete</div>
+                                ` : ''}
+                                <button class="btn btn-primary" style="width: 100%; margin-top: ${progress.started ? '0.5rem' : '0'};" onclick="viewCourse('${course.id}')">
+                                    ${buttonText}
                                 </button>
                             </div>
-                        `).join('')}
+                        `;
+                        }).join('')}
                     </div>
                 `}
             `;
@@ -1718,11 +2059,10 @@
                 </p>
                 
                 ${pdfCount === 0 ? `
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Downloads Available Yet</h3>
-                        <p style="color: var(--text-tertiary);">
-                            Check back soon for free resources!
-                        </p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📄</div>
+                        <h3>No Downloads Available Yet</h3>
+                        <p>Free PDF resources, workbooks, and templates are coming soon!</p>
                     </div>
                 ` : `
                     <div class="pdf-list" style="max-width: 800px;">
@@ -1778,14 +2118,10 @@
                 </p>
                 
                 ${ecourseCount === 0 ? `
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
-                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Premium Content Available Yet</h3>
-                        <p style="color: var(--text-tertiary); margin-bottom: 1rem;">
-                            Check back soon for new e-courses!
-                        </p>
-                        <p style="color: var(--text-tertiary); font-size: 0.875rem;">
-                            <strong>Teacher?</strong> Upload e-courses through the instructor dashboard.
-                        </p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⭐</div>
+                        <h3>No Premium Content Available Yet</h3>
+                        <p>Interactive e-courses with quizzes and exercises are coming soon!</p>
                     </div>
                 ` : `
                     <div class="course-grid">
@@ -1863,7 +2199,7 @@
                 
             } catch (error) {
                 console.error('Error opening e-course:', error);
-                alert('Error: ' + error.message);
+                showErrorToast('Error opening e-course: ' + error.message);
             }
         }
 
@@ -1915,7 +2251,7 @@
 
             } catch (error) {
                 console.error('Checkout error:', error);
-                alert('Error creating checkout session: ' + error.message + '\n\nPlease try again or contact support.');
+                showErrorToast('Error creating checkout session. Please try again or contact support.');
             }
         }
 
@@ -1960,11 +2296,13 @@
 
                 <div id="coursesList">
                     ${courseCount === 0 ? `
-                        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; text-align: center;">
-                            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">No Courses Yet</h3>
-                            <p style="color: var(--text-tertiary);">
-                                Click "Create New Course" to add your first course with videos, PDFs, and e-courses.
-                            </p>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎓</div>
+                            <h3>Ready to Create Your First Course?</h3>
+                            <p>Click "Create New Course" above to start building amazing AI training content!</p>
+                            <button class="btn btn-primary" onclick="showCreateCourseModal()" style="margin-top: 1rem;">
+                                + Create Your First Course
+                            </button>
                         </div>
                     ` : `
                         <h3 style="margin-bottom: 1rem;">Your Courses</h3>
@@ -2087,12 +2425,12 @@
 
                 if (error) throw error;
 
-                alert('Course created successfully!');
+                showSuccessToast('Course created successfully!');
                 form.closest('.modal').remove();
                 await loadTeacherDashboard();
 
             } catch (error) {
-                alert('Error creating course: ' + error.message);
+                showErrorToast('Error creating course: ' + error.message);
             } finally {
                 form.classList.remove('loading');
             }
@@ -2106,7 +2444,7 @@
                 .single();
 
             if (error) {
-                alert('Error loading course: ' + error.message);
+                showErrorToast('Error loading course: ' + error.message);
                 return;
             }
 
@@ -2187,12 +2525,12 @@
 
                 if (error) throw error;
 
-                alert('Course updated successfully!');
+                showSuccessToast('Course updated successfully!');
                 form.closest('.modal').remove();
                 await loadTeacherDashboard();
 
             } catch (error) {
-                alert('Error updating course: ' + error.message);
+                showErrorToast('Error updating course: ' + error.message);
             } finally {
                 form.classList.remove('loading');
             }
@@ -2207,11 +2545,11 @@
 
                 if (error) throw error;
 
-                alert(currentStatus ? 'Course unpublished!' : 'Course published! Students can now see it.');
+                showSuccessToast(currentStatus ? 'Course unpublished!' : 'Course published! Students can now see it.');
                 await loadTeacherDashboard();
 
             } catch (error) {
-                alert('Error: ' + error.message);
+                showErrorToast('Error: ' + error.message);
             }
         }
 
@@ -2314,7 +2652,7 @@
             const file = fileInput.files[0];
 
             if (!file) {
-                alert('Please select a PDF file');
+                showErrorToast('Please select a PDF file');
                 form.classList.remove('loading');
                 return;
             }
@@ -2344,12 +2682,12 @@
 
                 if (dbError) throw dbError;
 
-                alert('PDF uploaded successfully!');
+                showSuccessToast('PDF uploaded successfully!');
                 form.closest('.modal').remove();
                 managePDFs(courseId);
 
             } catch (error) {
-                alert('Error uploading PDF: ' + error.message);
+                showErrorToast('Error uploading PDF: ' + error.message);
             } finally {
                 form.classList.remove('loading');
             }
@@ -2378,12 +2716,12 @@
 
                 if (error) throw error;
 
-                alert('PDF deleted successfully!');
+                showSuccessToast('PDF deleted successfully!');
                 document.querySelector('.modal').remove();
                 managePDFs(courseId);
 
             } catch (error) {
-                alert('Error deleting PDF: ' + error.message);
+                showErrorToast('Error deleting PDF: ' + error.message);
             }
         }
 
@@ -2506,7 +2844,7 @@
             const file = fileInput.files[0];
 
             if (!file) {
-                alert('Please select an HTML file');
+                showErrorToast('Please select an HTML file');
                 form.classList.remove('loading');
                 return;
             }
@@ -2543,12 +2881,12 @@
 
                 if (dbError) throw dbError;
 
-                alert('E-course uploaded successfully!');
+                showSuccessToast('E-course uploaded successfully!');
                 form.closest('.modal').remove();
                 manageEcourses(courseId);
 
             } catch (error) {
-                alert('Error uploading e-course: ' + error.message);
+                showErrorToast('Error uploading e-course: ' + error.message);
             } finally {
                 form.classList.remove('loading');
             }
@@ -2566,12 +2904,12 @@
 
                 if (error) throw error;
 
-                alert(newStatus ? 'E-course published! Students can now purchase it.' : 'E-course unpublished!');
+                showSuccessToast(newStatus ? 'E-course published! Students can now purchase it.' : 'E-course unpublished!');
                 document.querySelector('.modal').remove();
                 manageEcourses(courseId);
 
             } catch (error) {
-                alert('Error: ' + error.message);
+                showErrorToast('Error: ' + error.message);
                 console.error('Publish error:', error);
             }
         }
@@ -2599,12 +2937,12 @@
 
                 if (error) throw error;
 
-                alert('E-course deleted successfully!');
+                showSuccessToast('E-course deleted successfully!');
                 document.querySelector('.modal').remove();
                 manageEcourses(courseId);
 
             } catch (error) {
-                alert('Error deleting e-course: ' + error.message);
+                showErrorToast('Error deleting e-course: ' + error.message);
             }
         }
 
@@ -2612,6 +2950,9 @@
         // STUDENT VIEW COURSE
         // ========================================
         async function viewCourse(courseId) {
+            // Mark course as started
+            markCourseAsStarted(courseId);
+
             const { data: course, error } = await supabase
                 .from('courses')
                 .select('*')
@@ -2619,7 +2960,7 @@
                 .single();
 
             if (error) {
-                alert('Error loading course: ' + error.message);
+                showErrorToast('Error loading course: ' + error.message);
                 return;
             }
 
