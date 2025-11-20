@@ -1049,8 +1049,8 @@
         /* HERO VIDEO */
         .hero-video-container {
             position: relative;
-            max-width: 600px;
-            margin: 0 auto 3rem;
+            max-width: 300px;
+            margin: 2rem auto 3rem;
             padding: 0 2rem;
             cursor: pointer;
         }
@@ -1092,27 +1092,27 @@
         }
 
         .play-button {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 40px rgba(244, 162, 97, 0.5);
+            box-shadow: 0 8px 30px rgba(244, 162, 97, 0.5);
             transition: all 0.3s ease;
         }
 
         .hero-video-wrapper:hover .play-button {
             transform: scale(1.1);
-            box-shadow: 0 15px 50px rgba(244, 162, 97, 0.7);
+            box-shadow: 0 12px 40px rgba(244, 162, 97, 0.7);
         }
 
         .play-button::after {
             content: '▶';
             color: white;
-            font-size: 24px;
-            margin-left: 4px;
+            font-size: 20px;
+            margin-left: 3px;
         }
 
         /* RESPONSIVE */
@@ -1166,8 +1166,23 @@
             </div>
         </header>
 
+        <section class="hero">
+            <h1>
+                Master AI for Your
+                <span class="gradient-text">Small Business</span>
+            </h1>
+            <p>
+                Comprehensive training programs that help small business owners integrate AI tools 
+                through hands-on courses, interactive exercises, and real-world applications.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showPage('signup')">Start Learning →</button>
+                <button class="btn btn-secondary" onclick="showDemoVideo()">Watch Demo</button>
+            </div>
+        </section>
+
         <!-- HERO VIDEO -->
-        <div class="hero-video-container" style="padding-top: 3rem;">
+        <div class="hero-video-container">
             <div class="hero-video-wrapper" id="heroVideoWrapper" onclick="playHeroVideo()">
                 <video 
                     id="heroVideo"
@@ -1183,21 +1198,6 @@
                 </div>
             </div>
         </div>
-
-        <section class="hero">
-            <h1>
-                Master AI for Your
-                <span class="gradient-text">Small Business</span>
-            </h1>
-            <p>
-                Comprehensive training programs that help small business owners integrate AI tools 
-                through hands-on courses, interactive exercises, and real-world applications.
-            </p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="showPage('signup')">Start Learning →</button>
-                <button class="btn btn-secondary" onclick="showDemoVideo()">Watch Demo</button>
-            </div>
-        </section>
 
         <div class="stats">
             <div class="stat-card">
