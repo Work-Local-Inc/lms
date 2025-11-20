@@ -1046,6 +1046,75 @@
             margin-top: 0.25rem;
         }
 
+        /* HERO VIDEO */
+        .hero-video-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+            cursor: pointer;
+        }
+
+        .hero-video-wrapper {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: var(--bg-secondary);
+        }
+
+        .hero-video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hero-video-wrapper:hover .video-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .video-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(244, 162, 97, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .hero-video-wrapper:hover .play-button {
+            transform: scale(1.1);
+            box-shadow: 0 15px 50px rgba(244, 162, 97, 0.7);
+        }
+
+        .play-button::after {
+            content: '▶';
+            color: white;
+            font-size: 30px;
+            margin-left: 5px;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .hero h1 {
@@ -1096,6 +1165,24 @@
                 </nav>
             </div>
         </header>
+
+        <!-- HERO VIDEO -->
+        <div class="hero-video-container" style="padding-top: 3rem;">
+            <div class="hero-video-wrapper" id="heroVideoWrapper" onclick="playHeroVideo()">
+                <video 
+                    id="heroVideo"
+                    class="hero-video"
+                    poster="/worklocal_logo_mod.png"
+                    preload="metadata"
+                >
+                    <source src="/hero-video.mp4" type="video/mp4">
+                    Your browser doesn't support video playback.
+                </video>
+                <div class="video-overlay" id="videoOverlay">
+                    <div class="play-button"></div>
+                </div>
+            </div>
+        </div>
 
         <section class="hero">
             <h1>
@@ -1837,6 +1924,28 @@
                 userProfile = data;
             } catch (error) {
                 console.error('Error loading profile:', error);
+            }
+        }
+
+        // ========================================
+        // HERO VIDEO
+        // ========================================
+        function playHeroVideo() {
+            const video = document.getElementById('heroVideo');
+            const overlay = document.getElementById('videoOverlay');
+            
+            if (video.paused) {
+                video.play();
+                overlay.classList.add('hidden');
+                
+                // Show overlay again when video ends
+                video.onended = function() {
+                    overlay.classList.remove('hidden');
+                    video.currentTime = 0;
+                };
+            } else {
+                video.pause();
+                overlay.classList.remove('hidden');
             }
         }
 
