@@ -1172,10 +1172,11 @@
                 <video 
                     id="heroVideo"
                     class="hero-video"
-                    poster="/worklocal_logo_mod.png"
+                    poster="worklocal_logo_mod.png"
                     preload="metadata"
+                    controls
                 >
-                    <source src="/hero-video.mp4" type="video/mp4">
+                    <source src="hero-video.mp4" type="video/mp4">
                     Your browser doesn't support video playback.
                 </video>
                 <div class="video-overlay" id="videoOverlay">
@@ -1934,9 +1935,26 @@
             const video = document.getElementById('heroVideo');
             const overlay = document.getElementById('videoOverlay');
             
+            if (!video) {
+                console.error('Video element not found');
+                return;
+            }
+            
             if (video.paused) {
-                video.play();
-                overlay.classList.add('hidden');
+                // Attempt to play with error handling
+                const playPromise = video.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Video started successfully
+                        overlay.classList.add('hidden');
+                        console.log('Video playing');
+                    }).catch(error => {
+                        // Play failed - show error
+                        console.error('Error playing video:', error);
+                        showErrorToast('Unable to play video. Please check your connection.');
+                    });
+                }
                 
                 // Show overlay again when video ends
                 video.onended = function() {
