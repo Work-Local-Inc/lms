@@ -132,6 +132,54 @@
                     "@type": "Answer",
                     "text": "Traditional business courses teach concepts and strategies. Our AI training teaches you to use specific tools that immediately improve your business operations. You'll learn practical skills like automating customer responses, analyzing sales data, generating marketing content, and streamlining administrative tasks—capabilities that directly impact your bottom line."
                 }
+            },
+            {
+                "@type": "Question",
+                "name": "Isn't this just another expensive course that won't help my business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Work Local courses are designed to pay for themselves quickly. Most students implement at least one time-saving automation within the first week that saves them 2-3 hours per week. At an average business owner's time value of $50-100/hour, that's $400-1,200 in monthly value from one simple automation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "I'm already overwhelmed. Do I really have time to learn AI?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "That's exactly why you need AI! Our courses are specifically designed for busy entrepreneurs. You can complete lessons in 15-20 minute chunks, and the first automation you implement will give you back more time than you spend learning. Most students report saving 5-10 hours per week after completing just one course."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Won't AI just replace my job or make my skills obsolete?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "AI won't replace business owners—but business owners who use AI will replace those who don't. Think of AI as your tireless assistant, not your replacement. It handles repetitive tasks so you can focus on strategy, relationships, and growth."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "AI seems too complicated. What if I can't understand it?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We've taught AI to hundreds of business owners who felt the same way. Our courses assume zero technical knowledge—we literally start with 'How to copy and paste a prompt.' If you can send an email or use Facebook, you can learn AI with Work Local."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "I tried ChatGPT once and it didn't work. Why would this be different?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The difference is knowing HOW to use AI effectively. Our courses teach you proven prompts, frameworks, and workflows that actually work for real businesses. You'll learn the mistakes to avoid, the prompts that get results, and how to integrate AI into your actual business processes."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is it safe to put my business information into AI tools?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Great question! We teach you best practices for data security and privacy. You'll learn which tools have business-grade security, how to anonymize sensitive information, and when to use enterprise vs. free versions. Security is a core part of every course."
+                }
             }
         ]
     }
@@ -1023,6 +1071,122 @@
             margin-bottom: 1.5rem;
         }
 
+        /* FAQ SEARCH */
+        .faq-search-box {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .faq-search-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1rem 1rem 3rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .faq-search-input:focus {
+            outline: none;
+            border-color: var(--gradient-start);
+            box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.1);
+        }
+
+        .faq-search-wrapper {
+            position: relative;
+        }
+
+        .faq-search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 1.25rem;
+        }
+
+        /* FAQ ACCORDION */
+        .faq-accordion {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.hidden {
+            display: none;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .faq-question h3 {
+            font-size: 1.125rem;
+            margin: 0;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            color: var(--gradient-start);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .faq-answer-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .faq-no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-tertiary);
+        }
+
+        .faq-no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
         /* PROGRESS BAR */
         .progress-bar {
             width: 100%;
@@ -1276,60 +1440,190 @@
 
         <section class="section" style="background: var(--bg-card);">
             <h2 style="text-align: center;">Frequently Asked Questions</h2>
-            <div style="max-width: 800px; margin: 0 auto;">
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">Do I need technical experience to learn AI tools?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+            <p style="text-align: center; color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem;">
+                Find answers to common questions about Work Local AI training courses
+            </p>
+
+            <!-- FAQ SEARCH -->
+            <div class="faq-search-box">
+                <div class="faq-search-wrapper">
+                    <span class="faq-search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        id="faqSearch" 
+                        class="faq-search-input" 
+                        placeholder="Search frequently asked questions..."
+                        onkeyup="filterFAQs()"
+                    >
+                </div>
+            </div>
+
+            <!-- FAQ ACCORDION -->
+            <div class="faq-accordion" id="faqAccordion">
+                <!-- Technical Questions -->
+                <div class="faq-item" data-keywords="technical experience beginner easy learn">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Do I need technical experience to learn AI tools?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             No! Our courses are specifically designed for small business owners with no technical background. We focus on practical applications and avoid complicated jargon. If you can use email and browse the web, you can learn to use AI tools for your business.
                         </div>
                     </div>
                 </div>
 
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">How long does it take to complete a course?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+                <!-- Time Investment -->
+                <div class="faq-item" data-keywords="time duration complete course hours long">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>How long does it take to complete a course?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             Most courses take 2-4 hours to complete, but you can learn at your own pace. Watch videos, review materials, and practice exercises whenever it fits your schedule. Many students complete courses over a weekend or in several short sessions throughout the week.
                         </div>
                     </div>
                 </div>
 
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">What industries are your AI courses suitable for?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+                <!-- Industries -->
+                <div class="faq-item" data-keywords="industry restaurant retail healthcare business type suitable">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>What industries are your AI courses suitable for?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             We offer specialized courses for restaurants, retail stores, healthcare providers, real estate professionals, and many other industries. Our foundational AI training applies to any small business, while industry-specific courses provide targeted strategies for your particular field.
                         </div>
                     </div>
                 </div>
 
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">Will I get a certificate when I complete a course?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+                <!-- Certificate -->
+                <div class="faq-item" data-keywords="certificate certification credential proof complete">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Will I get a certificate when I complete a course?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             Yes! Upon completing a course and passing the final assessment, you'll receive a digital certificate that demonstrates your AI competency. You can share this certificate on LinkedIn, your website, or with clients to showcase your expertise.
                         </div>
                     </div>
                 </div>
 
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">Are the AI tools you teach free or do they require subscriptions?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+                <!-- Pricing -->
+                <div class="faq-item" data-keywords="price cost free paid subscription money expensive">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Are the AI tools you teach free or do they require subscriptions?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             We teach both free and paid AI tools. Many powerful AI solutions offer free tiers perfect for small businesses. When we cover premium tools, we clearly explain the costs and help you evaluate whether the investment makes sense for your specific business needs and budget.
                         </div>
                     </div>
                 </div>
 
-                <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
-                    <h3 itemprop="name" style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">How is AI training different from other business courses?</h3>
-                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text" style="color: var(--text-secondary); line-height: 1.6;">
+                <!-- Different from other courses -->
+                <div class="faq-item" data-keywords="different unique comparison traditional courses">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>How is AI training different from other business courses?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
                             Traditional business courses teach concepts and strategies. Our AI training teaches you to use specific tools that immediately improve your business operations. You'll learn practical skills like automating customer responses, analyzing sales data, generating marketing content, and streamlining administrative tasks—capabilities that directly impact your bottom line.
                         </div>
                     </div>
                 </div>
+
+                <!-- OBJECTION HANDLING FAQs -->
+
+                <!-- Too expensive -->
+                <div class="faq-item" data-keywords="expensive afford budget cost roi worth investment">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Isn't this just another expensive course that won't help my business?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Work Local courses are designed to pay for themselves quickly. Most students implement at least one time-saving automation within the first week that saves them 2-3 hours per week. At an average business owner's time value of $50-100/hour, that's $400-1,200 in monthly value from one simple automation. Our pricing is transparent, and many courses include free resources to get started.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No time -->
+                <div class="faq-item" data-keywords="busy time schedule overwhelmed workload">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>I'm already overwhelmed. Do I really have time to learn AI?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            That's exactly why you need AI! Our courses are specifically designed for busy entrepreneurs. You can complete lessons in 15-20 minute chunks, and the first automation you implement will give you back more time than you spend learning. Most students report saving 5-10 hours per week after completing just one course. It's not about finding time—it's about making time.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI will replace me -->
+                <div class="faq-item" data-keywords="replace job scary threat automation fear">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Won't AI just replace my job or make my skills obsolete?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            AI won't replace business owners—but business owners who use AI will replace those who don't. Think of AI as your tireless assistant, not your replacement. It handles repetitive tasks so you can focus on strategy, relationships, and growth. Our training helps you stay ahead of the curve and use AI as your competitive advantage, not a threat.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Too complicated -->
+                <div class="faq-item" data-keywords="difficult hard complex confusing complicated understand">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>AI seems too complicated. What if I can't understand it?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We've taught AI to hundreds of business owners who felt the same way. Our courses assume zero technical knowledge—we literally start with "How to copy and paste a prompt." Every concept is explained in plain English with real business examples. If you can send an email or use Facebook, you can learn AI with Work Local. Plus, our support team is always here to help if you get stuck.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Already tried AI -->
+                <div class="faq-item" data-keywords="tried chatgpt already used failed waste">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>I tried ChatGPT once and it didn't work. Why would this be different?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            That's like saying "I sent one email and didn't get a response, so email doesn't work." The difference is knowing HOW to use AI effectively. Our courses teach you proven prompts, frameworks, and workflows that actually work for real businesses. You'll learn the mistakes to avoid, the prompts that get results, and how to integrate AI into your actual business processes—not just experiment randomly.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security concerns -->
+                <div class="faq-item" data-keywords="security safe data privacy confidential information">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>Is it safe to put my business information into AI tools?</h3>
+                        <span class="faq-icon">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Great question! We teach you best practices for data security and privacy. You'll learn which tools have business-grade security, how to anonymize sensitive information, and when to use enterprise vs. free versions. We also cover what data to never share with AI. Security is a core part of every course, not an afterthought.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="faqNoResults" class="faq-no-results hidden">
+                <div class="faq-no-results-icon">🔍</div>
+                <h3>No matching questions found</h3>
+                <p style="color: var(--text-secondary);">Try different keywords or <a href="#" onclick="clearFAQSearch(); return false;" style="color: var(--gradient-start);">clear your search</a></p>
             </div>
         </section>
 
@@ -1925,6 +2219,64 @@
             } catch (error) {
                 console.error('Error loading profile:', error);
             }
+        }
+
+        // ========================================
+        // FAQ ACCORDION & SEARCH
+        // ========================================
+        function toggleFAQ(questionElement) {
+            const faqItem = questionElement.closest('.faq-item');
+            const wasActive = faqItem.classList.contains('active');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Toggle current FAQ
+            if (wasActive) {
+                faqItem.classList.remove('active');
+            } else {
+                faqItem.classList.add('active');
+            }
+        }
+
+        function filterFAQs() {
+            const searchInput = document.getElementById('faqSearch');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const faqItems = document.querySelectorAll('.faq-item');
+            const noResults = document.getElementById('faqNoResults');
+            let visibleCount = 0;
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('h3').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+                const keywords = item.getAttribute('data-keywords') || '';
+                
+                const searchableText = question + ' ' + answer + ' ' + keywords;
+                
+                if (searchTerm === '' || searchableText.includes(searchTerm)) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                    item.classList.remove('active');
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        function clearFAQSearch() {
+            document.getElementById('faqSearch').value = '';
+            filterFAQs();
         }
 
         // ========================================
