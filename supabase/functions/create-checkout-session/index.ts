@@ -53,7 +53,7 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get('origin')}?payment=success`,
+      success_url: `${req.headers.get('origin')}?payment=success&view=courses`,
       cancel_url: `${req.headers.get('origin')}?payment=cancelled`,
       customer_email: userEmail || undefined,
       metadata: {

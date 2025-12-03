@@ -1946,8 +1946,10 @@
         async function init() {
             loadThemePreference();
             
-            // Check for payment status in URL (after Stripe redirect)
-            checkPaymentStatus();
+            // Check for payment status in URL before session check
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const viewParam = urlParams.get('view');
             
             const { data: { session } } = await supabase.auth.getSession();
             
@@ -1955,6 +1957,29 @@
                 currentUser = session.user;
                 await loadUserProfile();
                 showDashboard();
+                
+                // After dashboard is loaded, check payment status and navigate
+                if (paymentStatus === 'success') {
+                    setTimeout(() => {
+                        showSuccessToast('🎉 Payment Successful! Your e-course has been unlocked.');
+                        
+                        // Navigate to My Courses if view parameter is set
+                        if (viewParam === 'courses') {
+                            showPage('courses');
+                        }
+                        
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 500);
+                } else if (paymentStatus === 'cancelled') {
+                    setTimeout(() => {
+                        showInfoToast('Payment was cancelled. You can try again anytime.');
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 500);
+                }
+            } else {
+                // Not logged in, just check for payment status
+                checkPaymentStatus();
             }
 
             supabase.auth.onAuthStateChange((event, session) => {
@@ -1970,24 +1995,20 @@
         }
 
         // ========================================
-        // PAYMENT STATUS CHECKER
+        // PAYMENT STATUS CHECKER (for non-authenticated users)
         // ========================================
         function checkPaymentStatus() {
             const urlParams = new URLSearchParams(window.location.search);
             const paymentStatus = urlParams.get('payment');
             
             if (paymentStatus === 'success') {
-                // Show success message
                 setTimeout(() => {
-                    showSuccessToast('🎉 Payment Successful! Your e-course has been unlocked. Check Premium Content to access it.');
-                    // Clean URL
+                    showSuccessToast('🎉 Payment Successful! Please sign in to access your e-course.');
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }, 500);
             } else if (paymentStatus === 'cancelled') {
-                // Show cancelled message
                 setTimeout(() => {
                     showInfoToast('Payment was cancelled. You can try again anytime.');
-                    // Clean URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }, 500);
             }
