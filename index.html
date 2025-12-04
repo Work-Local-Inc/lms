@@ -1307,6 +1307,304 @@
                 min-width: auto;
             }
         }
+
+        /* SOCIAL SHARE BUTTONS */
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            flex: 1;
+        }
+
+        .share-btn-linkedin {
+            background: #0077b5;
+            color: white;
+        }
+
+        .share-btn-linkedin:hover {
+            background: #005582;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 119, 181, 0.4);
+        }
+
+        .share-btn-twitter {
+            background: #000000;
+            color: white;
+        }
+
+        .share-btn-twitter:hover {
+            background: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .share-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* GAMIFICATION STYLES */
+        .gamification-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .gamification-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .streak-fire {
+            display: inline-block;
+            animation: fireGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes fireGlow {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .badge-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .badge-card.earned {
+            border-color: var(--gradient-start);
+            background: rgba(244, 162, 97, 0.1);
+        }
+
+        .badge-card.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .badge-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .badge-desc {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .badge-earned-date {
+            font-size: 0.7rem;
+            color: var(--gradient-start);
+            margin-top: 0.5rem;
+        }
+
+        .points-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            z-index: 10001;
+            animation: pointsPopup 1.5s ease-out forwards;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(244, 162, 97, 0.5);
+        }
+
+        @keyframes pointsPopup {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            40% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(-50%, -60%) scale(0.8);
+            }
+        }
+
+        .sidebar-achievements {
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(244, 162, 97, 0.15), rgba(245, 124, 0, 0.15));
+            border-radius: 12px;
+            border: 1px solid rgba(244, 162, 97, 0.3);
+        }
+
+        .sidebar-points {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-points-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gradient-start);
+        }
+
+        .sidebar-streak {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .level-progress {
+            background: var(--border-color);
+            border-radius: 999px;
+            height: 6px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .level-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        .level-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            margin-top: 0.25rem;
+        }
+
+        .new-badge-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .new-badge-content {
+            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+            border: 2px solid var(--gradient-start);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            animation: badgeUnlock 0.5s ease-out;
+        }
+
+        @keyframes badgeUnlock {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .new-badge-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: badgeBounce 0.6s ease-out 0.3s;
+        }
+
+        @keyframes badgeBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .new-badge-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gradient-start);
+            margin-bottom: 0.5rem;
+        }
+
+        .new-badge-name {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .new-badge-desc {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -1643,7 +1941,7 @@
                 </a>
             </p>
             <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-tertiary);">
-                Version 2.2 (Build 23)
+                Version 2.3 (Build 24)
             </p>
         </footer>
     </div>
@@ -1785,7 +2083,30 @@
                         <span class="sidebar-icon">⭐</span>
                         <span>Premium Content</span>
                     </div>
+                    <div class="sidebar-item" onclick="switchView('achievements')" data-view="achievements">
+                        <span class="sidebar-icon">🏆</span>
+                        <span>Achievements</span>
+                    </div>
                 </div>
+                
+                <!-- Gamification Mini-Stats -->
+                <div class="sidebar-achievements" id="sidebarAchievements">
+                    <div class="sidebar-points">
+                        <span>⚡ Points</span>
+                        <span class="sidebar-points-value" id="sidebarPoints">0</span>
+                    </div>
+                    <div class="sidebar-streak" id="sidebarStreak">
+                        🔥 0 day streak
+                    </div>
+                    <div class="level-progress">
+                        <div class="level-progress-bar" id="levelProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="level-label">
+                        <span id="currentLevel">Beginner</span>
+                        <span id="nextLevel">→ Learner</span>
+                    </div>
+                </div>
+                
                 <div class="sidebar-footer">
                     <div class="theme-toggle" onclick="toggleTheme()">
                         <span class="sidebar-icon">☀️</span>
@@ -1811,7 +2132,7 @@
                 </a>
             </p>
             <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-tertiary);">
-                Version 2.2 (Build 23)
+                Version 2.3 (Build 24)
             </p>
         </footer>
     </div>
@@ -1941,6 +2262,430 @@
         }
 
         // ========================================
+        // GAMIFICATION SYSTEM
+        // ========================================
+        const BADGES = {
+            first_steps: { 
+                id: 'first_steps', 
+                icon: '👣', 
+                name: 'First Steps', 
+                desc: 'Start your first course',
+                points: 25
+            },
+            curious_mind: { 
+                id: 'curious_mind', 
+                icon: '🔍', 
+                name: 'Curious Mind', 
+                desc: 'View 3 different courses',
+                points: 50
+            },
+            learner: { 
+                id: 'learner', 
+                icon: '📚', 
+                name: 'Dedicated Learner', 
+                desc: 'View 5 video courses',
+                points: 75
+            },
+            scholar: { 
+                id: 'scholar', 
+                icon: '🎓', 
+                name: 'Premium Scholar', 
+                desc: 'Purchase your first e-course',
+                points: 100
+            },
+            champion: { 
+                id: 'champion', 
+                icon: '🏆', 
+                name: 'Course Champion', 
+                desc: 'Complete a premium e-course',
+                points: 200
+            },
+            streak_3: { 
+                id: 'streak_3', 
+                icon: '🔥', 
+                name: 'On Fire', 
+                desc: 'Maintain a 3-day login streak',
+                points: 50
+            },
+            streak_7: { 
+                id: 'streak_7', 
+                icon: '💥', 
+                name: 'Unstoppable', 
+                desc: 'Maintain a 7-day login streak',
+                points: 100
+            },
+            downloader: { 
+                id: 'downloader', 
+                icon: '📥', 
+                name: 'Resource Collector', 
+                desc: 'Download 3 free resources',
+                points: 30
+            },
+            ai_explorer: { 
+                id: 'ai_explorer', 
+                icon: '🤖', 
+                name: 'AI Explorer', 
+                desc: 'Earn 250 total points',
+                points: 100
+            },
+            ai_master: { 
+                id: 'ai_master', 
+                icon: '🧠', 
+                name: 'AI Master', 
+                desc: 'Earn 500 total points',
+                points: 150
+            }
+        };
+
+        const LEVELS = [
+            { name: 'Beginner', minPoints: 0 },
+            { name: 'Learner', minPoints: 100 },
+            { name: 'Explorer', minPoints: 250 },
+            { name: 'Achiever', minPoints: 500 },
+            { name: 'Expert', minPoints: 1000 },
+            { name: 'Master', minPoints: 2000 }
+        ];
+
+        function getGamificationData() {
+            if (!currentUser) return null;
+            const data = localStorage.getItem(`gamification_${currentUser.id}`);
+            return data ? JSON.parse(data) : {
+                points: 0,
+                badges: [],
+                streak: 0,
+                lastLoginDate: null,
+                coursesViewed: [],
+                downloadsCount: 0,
+                premiumPurchased: false,
+                premiumCompleted: false
+            };
+        }
+
+        function saveGamificationData(data) {
+            if (!currentUser) return;
+            localStorage.setItem(`gamification_${currentUser.id}`, JSON.stringify(data));
+            updateSidebarGamification();
+        }
+
+        function awardPoints(points, reason) {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            data.points += points;
+            saveGamificationData(data);
+            
+            // Show points popup
+            showPointsPopup(points, reason);
+            
+            // Check for point-based badges
+            checkBadges();
+        }
+
+        function showPointsPopup(points, reason) {
+            const popup = document.createElement('div');
+            popup.className = 'points-popup';
+            popup.innerHTML = `+${points} Points!<br><span style="font-size: 0.8rem; font-weight: 400;">${reason}</span>`;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.remove(), 1500);
+        }
+
+        function awardBadge(badgeId) {
+            const data = getGamificationData();
+            if (!data || data.badges.includes(badgeId)) return;
+            
+            const badge = BADGES[badgeId];
+            data.badges.push(badgeId);
+            data.points += badge.points;
+            saveGamificationData(data);
+            
+            // Show badge unlock modal
+            showBadgeUnlockModal(badge);
+        }
+
+        function showBadgeUnlockModal(badge) {
+            const modal = document.createElement('div');
+            modal.className = 'new-badge-modal';
+            modal.innerHTML = `
+                <div class="new-badge-content">
+                    <div class="new-badge-icon">${badge.icon}</div>
+                    <div class="new-badge-title">🎉 Badge Unlocked!</div>
+                    <div class="new-badge-name">${badge.name}</div>
+                    <div class="new-badge-desc">${badge.desc}</div>
+                    <p style="color: var(--gradient-start); font-weight: 600;">+${badge.points} Points</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="this.closest('.new-badge-modal').remove()">
+                        Awesome!
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(modal)) {
+                    modal.remove();
+                }
+            }, 5000);
+        }
+
+        function checkBadges() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            // Point-based badges
+            if (data.points >= 250 && !data.badges.includes('ai_explorer')) {
+                awardBadge('ai_explorer');
+            }
+            if (data.points >= 500 && !data.badges.includes('ai_master')) {
+                awardBadge('ai_master');
+            }
+            
+            // Course viewing badges
+            if (data.coursesViewed.length >= 1 && !data.badges.includes('first_steps')) {
+                awardBadge('first_steps');
+            }
+            if (data.coursesViewed.length >= 3 && !data.badges.includes('curious_mind')) {
+                awardBadge('curious_mind');
+            }
+            if (data.coursesViewed.length >= 5 && !data.badges.includes('learner')) {
+                awardBadge('learner');
+            }
+            
+            // Download badge
+            if (data.downloadsCount >= 3 && !data.badges.includes('downloader')) {
+                awardBadge('downloader');
+            }
+            
+            // Streak badges
+            if (data.streak >= 3 && !data.badges.includes('streak_3')) {
+                awardBadge('streak_3');
+            }
+            if (data.streak >= 7 && !data.badges.includes('streak_7')) {
+                awardBadge('streak_7');
+            }
+            
+            // Premium badges
+            if (data.premiumPurchased && !data.badges.includes('scholar')) {
+                awardBadge('scholar');
+            }
+            if (data.premiumCompleted && !data.badges.includes('champion')) {
+                awardBadge('champion');
+            }
+        }
+
+        function trackCourseView(courseId) {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            if (!data.coursesViewed.includes(courseId)) {
+                data.coursesViewed.push(courseId);
+                saveGamificationData(data);
+                awardPoints(25, 'Watched a course');
+                checkBadges();
+            }
+        }
+
+        function trackDownload() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            data.downloadsCount++;
+            saveGamificationData(data);
+            awardPoints(10, 'Downloaded a resource');
+            checkBadges();
+        }
+
+        function trackPremiumPurchase() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            if (!data.premiumPurchased) {
+                data.premiumPurchased = true;
+                saveGamificationData(data);
+                awardPoints(100, 'Purchased premium content');
+                checkBadges();
+            }
+        }
+
+        function trackPremiumComplete() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            if (!data.premiumCompleted) {
+                data.premiumCompleted = true;
+                saveGamificationData(data);
+                awardPoints(200, 'Completed premium course');
+                checkBadges();
+            }
+        }
+
+        function trackDailyLogin() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            const today = new Date().toDateString();
+            
+            if (data.lastLoginDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (data.lastLoginDate === yesterday.toDateString()) {
+                    data.streak++;
+                } else if (data.lastLoginDate !== today) {
+                    data.streak = 1;
+                }
+                
+                data.lastLoginDate = today;
+                saveGamificationData(data);
+                
+                if (data.streak > 1) {
+                    awardPoints(5 * data.streak, `${data.streak}-day streak bonus!`);
+                } else {
+                    awardPoints(10, 'Daily login');
+                }
+                
+                checkBadges();
+            }
+        }
+
+        function getCurrentLevel(points) {
+            for (let i = LEVELS.length - 1; i >= 0; i--) {
+                if (points >= LEVELS[i].minPoints) {
+                    return {
+                        current: LEVELS[i],
+                        next: LEVELS[i + 1] || null,
+                        index: i
+                    };
+                }
+            }
+            return { current: LEVELS[0], next: LEVELS[1], index: 0 };
+        }
+
+        function updateSidebarGamification() {
+            const data = getGamificationData();
+            if (!data) return;
+            
+            const pointsEl = document.getElementById('sidebarPoints');
+            const streakEl = document.getElementById('sidebarStreak');
+            const progressEl = document.getElementById('levelProgressBar');
+            const currentLevelEl = document.getElementById('currentLevel');
+            const nextLevelEl = document.getElementById('nextLevel');
+            
+            if (pointsEl) pointsEl.textContent = data.points;
+            if (streakEl) {
+                const fire = data.streak >= 3 ? '<span class="streak-fire">🔥</span>' : '🔥';
+                streakEl.innerHTML = `${fire} ${data.streak} day streak`;
+            }
+            
+            const levelInfo = getCurrentLevel(data.points);
+            if (currentLevelEl) currentLevelEl.textContent = levelInfo.current.name;
+            
+            if (levelInfo.next) {
+                if (nextLevelEl) nextLevelEl.textContent = `→ ${levelInfo.next.name}`;
+                const progress = ((data.points - levelInfo.current.minPoints) / 
+                    (levelInfo.next.minPoints - levelInfo.current.minPoints)) * 100;
+                if (progressEl) progressEl.style.width = `${Math.min(progress, 100)}%`;
+            } else {
+                if (nextLevelEl) nextLevelEl.textContent = 'MAX';
+                if (progressEl) progressEl.style.width = '100%';
+            }
+        }
+
+        function loadAchievementsView() {
+            const content = document.getElementById('dashboardContent');
+            const data = getGamificationData() || { points: 0, badges: [], streak: 0 };
+            const levelInfo = getCurrentLevel(data.points);
+            
+            content.innerHTML = `
+                <div class="gamification-header">
+                    <h2 style="margin-bottom: 1rem; font-size: 1.5rem;">Your Achievements</h2>
+                    <div class="gamification-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">⚡ ${data.points}</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${data.streak >= 3 ? '<span class="streak-fire">🔥</span>' : '🔥'} ${data.streak}</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">🏅 ${data.badges.length}/${Object.keys(BADGES).length}</div>
+                            <div class="stat-label">Badges Earned</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Level: ${levelInfo.current.name}</span>
+                            <span>${levelInfo.next ? `Next: ${levelInfo.next.name} (${levelInfo.next.minPoints} pts)` : 'MAX LEVEL!'}</span>
+                        </div>
+                        <div class="level-progress" style="height: 10px;">
+                            <div class="level-progress-bar" style="width: ${levelInfo.next ? ((data.points - levelInfo.current.minPoints) / (levelInfo.next.minPoints - levelInfo.current.minPoints)) * 100 : 100}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem;">🏆 Badges</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Earn badges by completing activities and reaching milestones!</p>
+                
+                <div class="badge-grid">
+                    ${Object.values(BADGES).map(badge => {
+                        const earned = data.badges.includes(badge.id);
+                        return `
+                            <div class="badge-card ${earned ? 'earned' : 'locked'}">
+                                <span class="badge-icon">${badge.icon}</span>
+                                <div class="badge-name">${badge.name}</div>
+                                <div class="badge-desc">${badge.desc}</div>
+                                ${earned ? 
+                                    `<div class="badge-earned-date">✓ Earned (+${badge.points} pts)</div>` : 
+                                    `<div class="badge-desc" style="margin-top: 0.5rem; color: var(--gradient-start);">+${badge.points} pts</div>`
+                                }
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+                    <h3 style="margin-bottom: 1rem;">📊 How to Earn Points</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+25 pts</strong> - Watch a video course
+                        </div>
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+10 pts</strong> - Download a resource
+                        </div>
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+100 pts</strong> - Purchase premium content
+                        </div>
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+200 pts</strong> - Complete a premium course
+                        </div>
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+10 pts</strong> - Daily login
+                        </div>
+                        <div style="color: var(--text-secondary);">
+                            <strong style="color: var(--text-primary);">+5×streak</strong> - Streak bonus
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========================================
+        // SOCIAL SHARING (Premium Courses)
+        // ========================================
+        function shareOnLinkedIn(courseTitle) {
+            const text = encodeURIComponent(`🎓 I just completed "${courseTitle}" on Work Local - AI Training for Small Business Owners! Learning AI tools to grow my business. #AITraining #SmallBusiness #WorkLocal`);
+            const url = encodeURIComponent('https://work-local-lms.netlify.app');
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareOnTwitter(courseTitle) {
+            const text = encodeURIComponent(`🎓 Just completed "${courseTitle}" on @WorkLocal! Learning AI tools to grow my business 🚀 #AITraining #SmallBusiness`);
+            const url = encodeURIComponent('https://work-local-lms.netlify.app');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
+        }
+
+        // ========================================
         // INITIALIZATION
         // ========================================
         async function init() {
@@ -1958,14 +2703,21 @@
                 await loadUserProfile();
                 showDashboard();
                 
+                // Track daily login for gamification
+                trackDailyLogin();
+                updateSidebarGamification();
+                
                 // After dashboard is loaded, check payment status and navigate
                 if (paymentStatus === 'success') {
                     setTimeout(() => {
                         showSuccessToast('🎉 Payment Successful! Your e-course has been unlocked.');
                         
+                        // Track premium purchase for gamification
+                        trackPremiumPurchase();
+                        
                         // Navigate to My Courses if view parameter is set
                         if (viewParam === 'courses') {
-                            showPage('courses');
+                            switchView('premium');
                         }
                         
                         // Clean URL
@@ -2456,6 +3208,8 @@
                 loadFreeDownloads();
             } else if (view === 'premium') {
                 loadPremiumContent();
+            } else if (view === 'achievements') {
+                loadAchievementsView();
             }
         }
 
@@ -2574,7 +3328,7 @@
                                         <div style="font-size: 0.875rem; color: var(--text-tertiary);">From: ${pdf.courses.title}</div>
                                     </div>
                                 </div>
-                                <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small">
+                                <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small" onclick="trackDownload()">
                                     Download
                                 </a>
                             </div>
@@ -2626,6 +3380,7 @@
                     <div class="course-grid">
                         ${ecourses.map(ecourse => {
                             const isPurchased = purchasedIds.includes(ecourse.id);
+                            const escapedTitle = ecourse.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                             return `
                                 <div class="course-card">
                                     ${isPurchased ? 
@@ -2640,8 +3395,18 @@
                                     ${isPurchased ? 
                                         `<button class="btn btn-primary" style="width: 100%;" onclick="event.preventDefault(); openEcourse('${ecourse.file_url}')">
                                             Open E-Course
-                                        </button>` :
-                                        `<button class="btn btn-primary" style="width: 100%;" onclick="event.preventDefault(); initiateCheckout('${ecourse.id}', '${ecourse.title.replace(/'/g, "\\'")}', ${ecourse.price})">
+                                        </button>
+                                        <div class="share-buttons">
+                                            <button class="share-btn share-btn-linkedin" onclick="shareOnLinkedIn('${escapedTitle}')">
+                                                <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                                Share
+                                            </button>
+                                            <button class="share-btn share-btn-twitter" onclick="shareOnTwitter('${escapedTitle}')">
+                                                <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                                Share
+                                            </button>
+                                        </div>` :
+                                        `<button class="btn btn-primary" style="width: 100%;" onclick="event.preventDefault(); initiateCheckout('${ecourse.id}', '${escapedTitle}', ${ecourse.price})">
                                             Buy Now - ${ecourse.price}
                                         </button>`
                                     }
@@ -3451,6 +4216,9 @@
         async function viewCourse(courseId) {
             // Mark course as started
             markCourseAsStarted(courseId);
+            
+            // Track for gamification
+            trackCourseView(courseId);
 
             const { data: course, error } = await supabase
                 .from('courses')
@@ -3512,7 +4280,7 @@
                                             <span class="pdf-icon">📄</span>
                                             <span>${pdf.title}</span>
                                         </div>
-                                        <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small">
+                                        <a href="${pdf.file_url}" download target="_blank" class="btn btn-primary btn-small" onclick="trackDownload()">
                                             Download
                                         </a>
                                     </div>
