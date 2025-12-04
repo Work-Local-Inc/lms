@@ -2374,20 +2374,8 @@
             data.points += points;
             saveGamificationData(data);
             
-            // Show points popup
-            showPointsPopup(points, reason);
-            
             // Check for point-based badges
             checkBadges();
-        }
-
-        function showPointsPopup(points, reason) {
-            const popup = document.createElement('div');
-            popup.className = 'points-popup';
-            popup.innerHTML = `+${points} Points!<br><span style="font-size: 0.8rem; font-weight: 400;">${reason}</span>`;
-            document.body.appendChild(popup);
-            
-            setTimeout(() => popup.remove(), 1500);
         }
 
         function awardBadge(badgeId) {
