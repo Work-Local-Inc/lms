@@ -73,7 +73,7 @@ Your MCP config at `C:\Users\Tuf Gamer\.cursor\mcp.json`:
           "--project-ref=odmwtcaqwodjvcdrirma"
         ],
         "env": {
-          "SUPABASE_ACCESS_TOKEN": "sbp_8cffa03feceb9b57020ffc21b5ea4de3adea0604"
+          "SUPABASE_ACCESS_TOKEN": "YOUR_ACCESS_TOKEN_HERE"
         }
       }
     }
