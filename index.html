@@ -2147,8 +2147,8 @@
         // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY (starts with pk_test_...)
         const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SQBjnEevaKRbfqDyoWuTAxCtc36dTcM0cgm46kKYo0uMPGSzH0aULXmmz3NcCd6Gpmr14sG89E7NrSpHjjFUfXC00JkdQ3TU8';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const stripeClient = Stripe(STRIPE_PUBLISHABLE_KEY);
 
         let currentUser = null;
         let userProfile = null;
@@ -2684,7 +2684,7 @@
             const paymentStatus = urlParams.get('payment');
             const viewParam = urlParams.get('view');
             
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await db.auth.getSession();
             
             if (session) {
                 currentUser = session.user;
@@ -2722,7 +2722,7 @@
                 checkPaymentStatus();
             }
 
-            supabase.auth.onAuthStateChange((event, session) => {
+            db.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN') {
                     currentUser = session.user;
                     loadUserProfile().then(() => showDashboard());
@@ -2805,7 +2805,7 @@
             form.classList.add('loading');
 
             try {
-                const { data, error } = await supabase.auth.signUp({
+                const { data, error } = await db.auth.signUp({
                     email: email,
                     password: password,
                     options: {
@@ -2821,7 +2821,7 @@
                 if (error) throw error;
 
                 if (data.user) {
-                    await supabase.from('profiles').update({
+                    await db.from('profiles').update({
                         first_name: firstName,
                         last_name: lastName,
                         business_name: businessName
@@ -2858,7 +2858,7 @@
             form.classList.add('loading');
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await db.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
@@ -2883,7 +2883,7 @@
         }
 
         async function handleLogout() {
-            await supabase.auth.signOut();
+            await db.auth.signOut();
             currentUser = null;
             userProfile = null;
             showPage('landing');
@@ -2942,7 +2942,7 @@
             form.classList.add('loading');
 
             try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                const { error } = await db.auth.resetPasswordForEmail(email, {
                     redirectTo: window.location.origin + '/reset-password'
                 });
 
@@ -2969,7 +2969,7 @@
             if (!currentUser) return;
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('profiles')
                     .select('*')
                     .eq('id', currentUser.id)
@@ -3112,7 +3112,7 @@
         // SHOW ALL COURSES (LANDING PAGE)
         // ========================================
         async function showAllCourses() {
-            const { data: courses, error } = await supabase
+            const { data: courses, error } = await db
                 .from('courses')
                 .select('*')
                 .eq('is_published', true)
@@ -3228,7 +3228,7 @@
         async function loadVideoCourses() {
             const content = document.getElementById('dashboardContent');
             
-            const { data: courses, error } = await supabase
+            const { data: courses, error } = await db
                 .from('courses')
                 .select('*')
                 .eq('is_published', true)
@@ -3282,7 +3282,7 @@
         async function loadFreeDownloads() {
             const content = document.getElementById('dashboardContent');
             
-            const { data: pdfs, error } = await supabase
+            const { data: pdfs, error } = await db
                 .from('course_pdfs')
                 .select(`
                     *,
@@ -3330,7 +3330,7 @@
             const content = document.getElementById('dashboardContent');
             
             // Load all e-courses
-            const { data: ecourses, error: ecoursesError } = await supabase
+            const { data: ecourses, error: ecoursesError } = await db
                 .from('ecourses')
                 .select(`
                     *,
@@ -3344,7 +3344,7 @@
             console.log('E-courses query result:', ecourses, ecoursesError);
 
             // Load user's purchases
-            const { data: purchases, error: purchasesError } = await supabase
+            const { data: purchases, error: purchasesError } = await db
                 .from('purchases')
                 .select('ecourse_id')
                 .eq('user_id', currentUser.id);
@@ -3472,7 +3472,7 @@
                 document.body.appendChild(loadingModal);
 
                 // Call Supabase Edge Function to create Stripe Checkout Session
-                const { data: functionData, error: functionError } = await supabase.functions.invoke('create-checkout-session', {
+                const { data: functionData, error: functionError } = await db.functions.invoke('create-checkout-session', {
                     body: {
                         ecourseId: ecourseId,
                         ecourseTitle: title,
@@ -3493,7 +3493,7 @@
                 }
 
                 // Redirect to Stripe Checkout
-                const { error: stripeError } = await stripe.redirectToCheckout({
+                const { error: stripeError } = await stripeClient.redirectToCheckout({
                     sessionId: functionData.sessionId
                 });
 
@@ -3513,7 +3513,7 @@
         async function loadTeacherDashboard() {
             const content = document.getElementById('dashboardContent');
             
-            const { data: courses, error } = await supabase
+            const { data: courses, error } = await db
                 .from('courses')
                 .select('*')
                 .eq('instructor_id', currentUser.id)
@@ -3662,7 +3662,7 @@
             const duration = document.getElementById('courseDuration').value;
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('courses')
                     .insert([{
                         title: title,
@@ -3689,7 +3689,7 @@
         }
 
         async function editCourse(courseId) {
-            const { data: course, error } = await supabase
+            const { data: course, error } = await db
                 .from('courses')
                 .select('*')
                 .eq('id', courseId)
@@ -3764,7 +3764,7 @@
             const duration = document.getElementById('editCourseDuration').value;
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('courses')
                     .update({
                         title: title,
@@ -3790,7 +3790,7 @@
 
         async function togglePublish(courseId, currentStatus) {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('courses')
                     .update({ is_published: !currentStatus })
                     .eq('id', courseId);
@@ -3809,7 +3809,7 @@
         // PDF MANAGEMENT
         // ========================================
         async function managePDFs(courseId) {
-            const { data: pdfs, error } = await supabase
+            const { data: pdfs, error } = await db
                 .from('course_pdfs')
                 .select('*')
                 .eq('course_id', courseId)
@@ -3913,17 +3913,17 @@
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${courseId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-                const { data: uploadData, error: uploadError } = await supabase.storage
+                const { data: uploadData, error: uploadError } = await db.storage
                     .from('course-pdfs')
                     .upload(fileName, file);
 
                 if (uploadError) throw uploadError;
 
-                const { data: urlData } = supabase.storage
+                const { data: urlData } = db.storage
                     .from('course-pdfs')
                     .getPublicUrl(fileName);
 
-                const { data: dbData, error: dbError } = await supabase
+                const { data: dbData, error: dbError } = await db
                     .from('course_pdfs')
                     .insert([{
                         course_id: courseId,
@@ -3949,19 +3949,19 @@
             if (!confirm('Are you sure you want to delete this PDF?')) return;
 
             try {
-                const { data: pdf } = await supabase
+                const { data: pdf } = await db
                     .from('course_pdfs')
                     .select('file_path')
                     .eq('id', pdfId)
                     .single();
 
                 if (pdf && pdf.file_path) {
-                    await supabase.storage
+                    await db.storage
                         .from('course-pdfs')
                         .remove([pdf.file_path]);
                 }
 
-                const { error } = await supabase
+                const { error } = await db
                     .from('course_pdfs')
                     .delete()
                     .eq('id', pdfId);
@@ -3981,7 +3981,7 @@
         // E-COURSE MANAGEMENT (NEW!)
         // ========================================
         async function manageEcourses(courseId) {
-            const { data: ecourses, error } = await supabase
+            const { data: ecourses, error } = await db
                 .from('ecourses')
                 .select('*')
                 .eq('course_id', courseId)
@@ -4106,7 +4106,7 @@
                 const fileName = `${courseId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
                 // Upload with correct content-type for HTML
-                const { data: uploadData, error: uploadError } = await supabase.storage
+                const { data: uploadData, error: uploadError } = await db.storage
                     .from('ecourse-files')
                     .upload(fileName, file, {
                         contentType: 'text/html',
@@ -4115,11 +4115,11 @@
 
                 if (uploadError) throw uploadError;
 
-                const { data: urlData } = supabase.storage
+                const { data: urlData } = db.storage
                     .from('ecourse-files')
                     .getPublicUrl(fileName);
 
-                const { data: dbData, error: dbError } = await supabase
+                const { data: dbData, error: dbError } = await db
                     .from('ecourses')
                     .insert([{
                         course_id: courseId,
@@ -4148,7 +4148,7 @@
             const newStatus = !currentStatus;
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('ecourses')
                     .update({ is_published: newStatus })
                     .eq('id', ecourseId)
@@ -4170,19 +4170,19 @@
             if (!confirm('Are you sure you want to delete this e-course?')) return;
 
             try {
-                const { data: ecourse } = await supabase
+                const { data: ecourse } = await db
                     .from('ecourses')
                     .select('file_path')
                     .eq('id', ecourseId)
                     .single();
 
                 if (ecourse && ecourse.file_path) {
-                    await supabase.storage
+                    await db.storage
                         .from('ecourse-files')
                         .remove([ecourse.file_path]);
                 }
 
-                const { error } = await supabase
+                const { error } = await db
                     .from('ecourses')
                     .delete()
                     .eq('id', ecourseId);
@@ -4208,7 +4208,7 @@
             // Track for gamification
             trackCourseView(courseId);
 
-            const { data: course, error } = await supabase
+            const { data: course, error } = await db
                 .from('courses')
                 .select('*')
                 .eq('id', courseId)
@@ -4219,7 +4219,7 @@
                 return;
             }
 
-            const { data: pdfs } = await supabase
+            const { data: pdfs } = await db
                 .from('course_pdfs')
                 .select('*')
                 .eq('course_id', courseId)
