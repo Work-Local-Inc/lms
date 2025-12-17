@@ -2147,8 +2147,29 @@
         // ⚠️ REPLACE WITH YOUR STRIPE PUBLISHABLE KEY (starts with pk_test_...)
         const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SQBjnEevaKRbfqDyoWuTAxCtc36dTcM0cgm46kKYo0uMPGSzH0aULXmmz3NcCd6Gpmr14sG89E7NrSpHjjFUfXC00JkdQ3TU8';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+        // Initialize clients with error handling to prevent script from crashing
+        let supabase = null;
+        let stripe = null;
+        
+        try {
+            if (window.supabase && window.supabase.createClient) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } else {
+                console.error('Supabase JS library failed to load');
+            }
+        } catch (e) {
+            console.error('Error initializing Supabase:', e);
+        }
+        
+        try {
+            if (typeof Stripe !== 'undefined') {
+                stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+            } else {
+                console.error('Stripe JS library failed to load');
+            }
+        } catch (e) {
+            console.error('Error initializing Stripe:', e);
+        }
 
         let currentUser = null;
         let userProfile = null;
@@ -2678,6 +2699,13 @@
         // ========================================
         async function init() {
             loadThemePreference();
+            
+            // Check if Supabase loaded correctly
+            if (!supabase) {
+                console.error('Supabase not initialized - site features will be limited');
+                // Still allow basic page navigation
+                return;
+            }
             
             // Check for payment status in URL before session check
             const urlParams = new URLSearchParams(window.location.search);
@@ -3459,6 +3487,12 @@
         // STRIPE CHECKOUT (REAL IMPLEMENTATION)
         // ========================================
         async function initiateCheckout(ecourseId, title, price) {
+            // Check if Stripe is available
+            if (!stripe) {
+                showErrorToast('Payment system unavailable. Please disable ad blockers and refresh.');
+                return;
+            }
+            
             try {
                 // Show loading state
                 const loadingModal = document.createElement('div');
